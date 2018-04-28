@@ -10,12 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Mopencl.hpp"
 #include "GlfwWindow.hpp"
+#include "Mopencl.hpp"
+#include "Vao.hpp"
+#include "Vbo.hpp"
 #include <fstream>
 #include <string>
 #include <iostream>
 #define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
 #define PARTICLES_COUNT 1000000
 #define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
 
@@ -42,12 +45,32 @@ char		*loadkernel(std::string const filepath, size_t *size)
 	return (kernel);
 }
 
+int		run_window(Mopencl & cl)
+{
+	GlfwWindow	window("Particle System", 1280, 720);
+	Vbo			vbo;
+	Vao			vao;
+
+	(void)cl;
+	(void)vbo;
+	(void)vao;
+	// window display part
+	if (!window.Init())
+		return (EXIT_FAILURE);
+//	vbo.CreateBuffer(10, (void * const)"hello world");
+//	vao.CreateBuffer(10, (void * const)"hello world", vbo);
+	window.Show();
+	window.Render();
+	std::cout << "done." << std::endl;
+	return (EXIT_SUCCESS);
+}
+
 int		main(int ac, char **av)
 {
 	size_t		kernel_size;
 	char		*kernel;
 	Mopencl		cl;
-	GlfwWindow	window("Particle System", 1280, 720);
+
 
 	if (ac < 2)
 		return (2);
@@ -66,11 +89,5 @@ int		main(int ac, char **av)
 	std::cout << "vram buffer done" << std::endl;
 	// passing buffer to the program
 	cl.RunProgram().setArg(0, test);
-
-	// window display part
-	window.Init();
-	window.Show();
-	window.Render();
-	std::cout << "done." << std::endl;;
-	return (EXIT_SUCCESS);
+	return (run_window(cl));
 }

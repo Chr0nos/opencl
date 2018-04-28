@@ -13,12 +13,12 @@
 NAME=test
 CC=clang++
 CXXFLAGS=-Wall -Werror -Wextra -std=c++11 -Wvla
-INC=-I./includes
-LINKER=
+INC=
+LINKER=-lglew
 BUILDDIR=./build
 SRCDIR=./srcs
 
-SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp
+SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp GLBuffer.cpp Vbo.cpp
 
 OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
 

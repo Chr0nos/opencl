@@ -12,7 +12,9 @@
 
 #ifndef GLFW_WINDOW_HPP
 # define GLFW_WINDOW_HPP
+# include <GL/glew.h>
 # include <GLFW/glfw3.h>
+# include "Vbo.hpp"
 # include <string>
 # define FLAG_NONE			0
 # define FLAG_GLFW_INIT_OK	(1u << 0)
@@ -35,6 +37,7 @@ class GlfwWindow
 		unsigned int		_h;
 		std::string			_title;
 		GLFWwindow			*_window;
+		Vbo					*_vbo;
 };
 
 #endif

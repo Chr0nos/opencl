@@ -19,11 +19,14 @@ GlfwWindow::GlfwWindow(std::string title, unsigned int w, unsigned int h)
 	this->_w = w;
 	this->_h = h;
 	this->_window = nullptr;
-	this->_flags = FLAG_NONE;	
+	this->_flags = FLAG_NONE;
+	this->_vbo = nullptr;
 }
 
 GlfwWindow::~GlfwWindow(void)
 {
+	if (this->_vbo)
+		delete this->_vbo;
 	glfwTerminate();
 	std::cout << "glfw terminated" << std::endl;
 }
@@ -32,7 +35,7 @@ bool GlfwWindow::Init(void)
 {
 	if (!glfwInit())
 		return (false);
-	this->_flags |= FLAG_GLFW_INIT_OK;
+		this->_flags |= FLAG_GLFW_INIT_OK;
 	std::cout << "glfw init ok" << std::endl;
 	return (true);
 }
@@ -49,6 +52,7 @@ void GlfwWindow::Show(void)
 	if (this->_window)
 	{
 		glfwMakeContextCurrent(this->_window);
+		glEnable(GL_DEPTH_TEST);		
 	}
 }
 
