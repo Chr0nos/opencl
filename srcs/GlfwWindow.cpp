@@ -47,12 +47,19 @@ void GlfwWindow::Show(void)
 		std::cout << "error: missing glfw initialisation" << std::endl;
 		return ;
 	}
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 16);
 	this->_window = glfwCreateWindow(this->_w, this->_h, this->_title.c_str(),
 			NULL, NULL);
 	if (this->_window)
 	{
 		glfwMakeContextCurrent(this->_window);
-		glEnable(GL_DEPTH_TEST);		
+		glEnable(GL_DEPTH_TEST);
+		std::cout << "renderer: " << glGetString(GL_RENDERER) <<
+			" version: " <<	glGetString(GL_VERSION) << std::endl;
 	}
 }
 

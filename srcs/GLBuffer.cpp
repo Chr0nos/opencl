@@ -9,6 +9,7 @@ GLBuffer::GLBuffer(size_t const size, void * const data)
 
 GLBuffer::GLBuffer(void)
 {
+    std::cout << "GLBuffer instancied" << std::endl;
     this->Init();
 }
 

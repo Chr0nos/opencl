@@ -57,7 +57,7 @@ int		run_window(Mopencl & cl)
 	// window display part
 	if (!window.Init())
 		return (EXIT_FAILURE);
-//	vbo.CreateBuffer(10, (void * const)"hello world");
+	// vbo.CreateBuffer(10, (void * const)"hello world");
 //	vao.CreateBuffer(10, (void * const)"hello world", vbo);
 	window.Show();
 	window.Render();
@@ -86,7 +86,7 @@ int		main(int ac, char **av)
 
 	std::cout << "making particles mvram buffer" << std::endl;
 	cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
-	std::cout << "vram buffer done" << std::endl;
+	std::cout << "vram buffer done (" << PARTICLES_MEM << ")" << std::endl;
 	// passing buffer to the program
 	cl.RunProgram().setArg(0, test);
 	return (run_window(cl));
