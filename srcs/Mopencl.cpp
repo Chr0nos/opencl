@@ -118,7 +118,7 @@ void Mopencl::AddSource(const char *kernel, const size_t size)
 	this->_sources.push_back({kernel, size});
 }
 
-bool Mopencl::BuildProgram()
+bool Mopencl::BuildProgram(void)
 {
 	cl::Program		program(this->_context, this->_sources);
 	cl::Device		device;
@@ -131,5 +131,24 @@ bool Mopencl::BuildProgram()
 		return (false);
 	}
 	std::cout << "program build ok" << std::endl;
+	this->_program = program;
 	return (true);
+}
+
+cl::Kernel Mopencl::RunProgram(void)
+{
+	return (this->RunProgram(this->_program));
+}
+
+cl::Kernel Mopencl::RunProgram(cl::Program & program)
+{
+	cl::Kernel					kernel(program, "start");
+
+	return (kernel);
+}
+
+cl::Buffer Mopencl::CreateBuffer(size_t const size)
+{
+	cl::Buffer		buff(this->_context, CL_MEM_READ_WRITE, size);
+	return (buff);
 }

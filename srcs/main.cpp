@@ -16,6 +16,8 @@
 #include <string>
 #include <iostream>
 #define EXIT_SUCCESS 0
+#define PARTICLES_COUNT 1000000
+#define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
 
 char		*loadkernel(std::string const filepath, size_t *size)
 {
@@ -23,6 +25,7 @@ char		*loadkernel(std::string const filepath, size_t *size)
 	char				*kernel;
 	size_t				length;
 
+	std::cout << "kernel read start" << std::endl;
 	*size = 0;
 	ifs.seekg(0, ifs.end);
 	length = ifs.tellg();
@@ -57,7 +60,17 @@ int		main(int ac, char **av)
 	cl.CreateContext();
 	cl.AddSource(kernel, kernel_size);
 	cl.BuildProgram();
-	//window.Show();
-	//window.Render();
+
+	std::cout << "making particles mvram buffer" << std::endl;
+	cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
+	std::cout << "vram buffer done" << std::endl;
+	// passing buffer to the program
+	cl.RunProgram().setArg(0, test);
+
+	// window display part
+	window.Init();
+	window.Show();
+	window.Render();
+	std::cout << "done." << std::endl;;
 	return (EXIT_SUCCESS);
 }

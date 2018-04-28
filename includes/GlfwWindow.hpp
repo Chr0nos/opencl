@@ -14,6 +14,8 @@
 # define GLFW_WINDOW_HPP
 # include <GLFW/glfw3.h>
 # include <string>
+# define FLAG_NONE			0
+# define FLAG_GLFW_INIT_OK	(1u << 0)
 
 class GlfwWindow
 {
@@ -24,7 +26,11 @@ class GlfwWindow
 		void	Show(void);
 		void	Render(void);
 
+	protected:
+		void	RenderFrame(void);
+
 	private:
+		unsigned int		_flags;
 		unsigned int		_w;
 		unsigned int		_h;
 		std::string			_title;

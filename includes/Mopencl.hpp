@@ -21,16 +21,20 @@
 class	Mopencl
 {
 	public:
-					Mopencl(void);
-					Mopencl(Mopencl const & src);
-					~Mopencl(void);
-		Mopencl&	operator=(Mopencl const & src);
-		void		ListDevices(void);
-		void		ListPlatforms(void);
-		bool		SelectPlatform(const cl_uint id);
-		bool		CreateContext();
-		void		AddSource(const char *kernel, const size_t size);
-		bool		BuildProgram();
+							Mopencl(void);
+							Mopencl(Mopencl const & src);
+							~Mopencl(void);
+		Mopencl&			operator=(Mopencl const & src);
+		void				ListDevices(void);
+		void				ListPlatforms(void);
+		bool				SelectPlatform(const cl_uint id);
+		bool				CreateContext(void);
+		void				AddSource(const char *kernel, const size_t size);
+		bool				BuildProgram(void);
+		cl::Buffer			CreateBuffer(size_t const size);
+		cl::Kernel			RunProgram(void);
+		cl::Kernel			RunProgram(cl::Program & program);
+
 
 	private:
 		VECTOR_CLASS<cl::Platform>		_platforms;
@@ -39,6 +43,8 @@ class	Mopencl
 		cl_uint							_selected_device;
 		cl::Context						_context;
 		cl::Program::Sources			_sources;
+		cl::CommandQueue				_queue;
+		cl::Program						_program;
 };
 
 #endif
