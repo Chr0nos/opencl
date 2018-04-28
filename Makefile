@@ -14,14 +14,19 @@ NAME=test
 CC=clang++
 CXXFLAGS=-Wall -Werror -Wextra -std=c++11 -Wvla
 INC=-I./includes
-LINKER=-lOpenCL
+LINKER=
 BUILDDIR=./build
 SRCDIR=./srcs
-
 
 SRCS=main.cpp Mopencl.cpp
 
 OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
+
+ifeq ($(shell uname -s),Darwin)
+	LINKER += -framework OpenCL
+else
+	LINKER += -lOpenCL
+endif
 
 all: $(NAME)
 

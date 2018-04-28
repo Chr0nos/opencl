@@ -112,3 +112,24 @@ bool Mopencl::CreateContext()
 	std::cout << std::endl;
 	return (false);
 }
+
+void Mopencl::AddSource(const char *kernel, const size_t size)
+{
+	this->_sources.push_back({kernel, size});
+}
+
+bool Mopencl::BuildProgram()
+{
+	cl::Program		program(this->_context, this->_sources);
+	cl::Device		device;
+
+	device = this->_devices[this->_selected_device];
+	if (program.build(this->_devices) != CL_SUCCESS)
+	{
+		std::cout << "error: failed to build program: " <<
+			program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device) << std::endl;
+		return (false);
+	}
+	std::cout << "program build ok" << std::endl;
+	return (true);
+}
