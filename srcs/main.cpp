@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Mopencl.hpp"
+#include "GlfwWindow.hpp"
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -43,6 +44,7 @@ int		main(int ac, char **av)
 	size_t		kernel_size;
 	char		*kernel;
 	Mopencl		cl;
+	GlfwWindow	window("Particle System", 1280, 720);
 
 	if (ac < 2)
 		return (2);
@@ -55,5 +57,7 @@ int		main(int ac, char **av)
 	cl.CreateContext();
 	cl.AddSource(kernel, kernel_size);
 	cl.BuildProgram();
+	//window.Show();
+	//window.Render();
 	return (EXIT_SUCCESS);
 }

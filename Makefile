@@ -18,14 +18,15 @@ LINKER=
 BUILDDIR=./build
 SRCDIR=./srcs
 
-SRCS=main.cpp Mopencl.cpp
+SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp
 
 OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
 
 ifeq ($(shell uname -s),Darwin)
-	LINKER += -framework OpenCL
+	INC += -I$(HOME)/.brew/include
+	LINKER += -framework OpenCL -framework OpenGL -L$(HOME)/.brew/lib/ -lglfw
 else
-	LINKER += -lOpenCL
+	LINKER += -lOpenCL -lglfw
 endif
 
 all: $(NAME)
