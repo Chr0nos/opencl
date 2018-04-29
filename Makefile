@@ -6,7 +6,7 @@
 #*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        *#
 #*                                                +#+#+#+#+#+   +#+           *#
 #*   Created: 2018/04/25 20:11:05 by snicolet          #+#    #+#             *#
-#*   Updated: 2018/04/26 00:56:55 by snicolet         ###   ########.fr       *#
+#*   Updated: 2018/04/29 03:50:36 by snicolet         ###   ########.fr       *#
 #*                                                                            *#
 #* ************************************************************************** *#
 
@@ -14,7 +14,7 @@ NAME=test
 CC=clang++
 CXXFLAGS=-Wall -Werror -Wextra -std=c++11 -Wvla
 INC=
-LINKER=-lglew
+LINKER=
 BUILDDIR=./build
 SRCDIR=./srcs
 
@@ -24,9 +24,9 @@ OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
 
 ifeq ($(shell uname -s),Darwin)
 	INC += -I$(HOME)/.brew/include
-	LINKER += -framework OpenCL -framework OpenGL -L$(HOME)/.brew/lib/ -lglfw
+	LINKER += -framework OpenCL -framework OpenGL -L$(HOME)/.brew/lib/ -lglfw -lglew
 else
-	LINKER += -lOpenCL -lglfw
+	LINKER += -lOpenCL -lglfw -lGLEW -lGL
 endif
 
 all: $(NAME)

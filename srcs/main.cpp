@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:47:03 by snicolet          #+#    #+#             */
-/*   Updated: 2018/04/26 00:50:46 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/04/29 03:52:40 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ int		main(int ac, char **av)
 	cl.ListPlatforms();
 	cl.SelectPlatform(1);
 	cl.ListDevices();
-	cl.CreateContext();
+	if (!cl.CreateContext())
+		return (EXIT_FAILURE);
 	cl.AddSource(kernel, kernel_size);
 	if (!cl.BuildProgram())
 		return (EXIT_CLPROG);
