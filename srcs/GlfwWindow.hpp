@@ -18,6 +18,7 @@
 # include <string>
 # define FLAG_NONE			0
 # define FLAG_GLFW_INIT_OK	(1u << 0)
+# define FLAG_GLEW_INIT_OK	(1u << 1)
 
 class GlfwWindow
 {
@@ -25,13 +26,14 @@ class GlfwWindow
 				GlfwWindow(std::string title, unsigned int w, unsigned int h);
 				~GlfwWindow(void);
 		bool	Init(void);
-		void	Show(void);
+		bool	Show(void);
 		void	Render(void);
 
 	protected:
 		void	RenderFrame(void);
 
 	private:
+		bool				InitGlew(void);
 		unsigned int		_flags;
 		unsigned int		_w;
 		unsigned int		_h;

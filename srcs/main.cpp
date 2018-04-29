@@ -14,11 +14,14 @@
 #include "Mopencl.hpp"
 #include "Vao.hpp"
 #include "Vbo.hpp"
+#include "Shader.hpp"
 #include <fstream>
 #include <string>
 #include <iostream>
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
+#define EXIT_SUCCESS	0
+#define EXIT_FAILURE	1
+#define EXIT_BADARG		2
+#define EXIT_CLPROG		3
 #define PARTICLES_COUNT 1000000
 #define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
 
@@ -48,18 +51,15 @@ char		*loadkernel(std::string const filepath, size_t *size)
 int		run_window(Mopencl & cl)
 {
 	GlfwWindow	window("Particle System", 1280, 720);
-	Vbo			vbo;
-	Vao			vao;
 
 	(void)cl;
-	(void)vbo;
-	(void)vao;
 	// window display part
 	if (!window.Init())
 		return (EXIT_FAILURE);
-	// vbo.CreateBuffer(10, (void * const)"hello world");
-//	vao.CreateBuffer(10, (void * const)"hello world", vbo);
-	window.Show();
+
+	if (!window.Show())
+		return (EXIT_FAILURE);
+	
 	window.Render();
 	std::cout << "done." << std::endl;
 	return (EXIT_SUCCESS);
@@ -73,17 +73,19 @@ int		main(int ac, char **av)
 
 
 	if (ac < 2)
-		return (2);
+		return (EXIT_BADARG);
 	kernel = loadkernel(av[1], &kernel_size);
 	if (!kernel)
-		return (1);
+		return (EXIT_FAILURE);
 	cl.ListPlatforms();
 	cl.SelectPlatform(1);
 	cl.ListDevices();
 	cl.CreateContext();
 	cl.AddSource(kernel, kernel_size);
-	cl.BuildProgram();
-
+	if (!cl.BuildProgram())
+		return (EXIT_CLPROG);
+	// not needed anymore.
+	delete kernel;
 	std::cout << "making particles mvram buffer" << std::endl;
 	cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
 	std::cout << "vram buffer done (" << PARTICLES_MEM << ")" << std::endl;

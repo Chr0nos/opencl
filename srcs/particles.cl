@@ -1,9 +1,16 @@
+struct				vec3
+{
+	float			x;
+	float			y;
+	float			z;
+};
+
 struct				s_particle
 {
-	vec3			position;
+	struct vec3		position;
 	unsigned int	color;
 };
 
-void		kernel	start()
+void		kernel	start(void)
 {
 };

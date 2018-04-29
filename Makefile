@@ -18,7 +18,7 @@ LINKER=-lglew
 BUILDDIR=./build
 SRCDIR=./srcs
 
-SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp GLBuffer.cpp Vbo.cpp
+SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp GLBuffer.cpp Vbo.cpp Shader.cpp
 
 OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
 
