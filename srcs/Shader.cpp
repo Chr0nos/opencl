@@ -29,6 +29,7 @@ bool Shader::BuildFile(char const * filepath, GLuint const type)
     if (!shader_code)
         return (false);
     ifs.read(shader_code, length);
+    ifs.close();
     ret = this->Build(shader_code, length, type);
     delete shader_code;
     std::cout << "Shader build state: " << ((ret) ? "Success" : "Failed") << std::endl;
