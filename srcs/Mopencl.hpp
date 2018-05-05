@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:43:24 by snicolet          #+#    #+#             */
-/*   Updated: 2018/04/28 16:42:56 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/05 17:59:15 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class	Mopencl
 
 
 	private:
+		bool				InitQueue(void);
 		VECTOR_CLASS<cl::Platform>		_platforms;
 		VECTOR_CLASS<cl::Device>		_devices;
 		cl_uint							_selected_platform;

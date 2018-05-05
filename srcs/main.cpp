@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:47:03 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/05 16:05:30 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/05 16:26:40 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ int		main(int ac, char **av)
 
 	if (ac < 2)
 		return (EXIT_BADARG);
+	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
 	kernel = loadkernel(av[1], &kernel_size);
 	if (!kernel)
 		return (EXIT_FAILURE);
@@ -91,6 +92,8 @@ int		main(int ac, char **av)
 		return (EXIT_CLPROG);
 	// not needed anymore.
 	delete kernel;
+	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
+	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
 	std::cout << "making particles mvram buffer" << std::endl;
 	cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
 	std::cout << "vram buffer done (" << PARTICLES_MEM << ")" << std::endl;
