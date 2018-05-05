@@ -2,6 +2,7 @@
 # define GLBUFFER_HPP
 # include <iostream>
 # include <GL/glew.h>
+# include <string>
 
 class GLBuffer
 {
@@ -13,11 +14,11 @@ class GLBuffer
         GLuint      GetBufferId(void);
         bool        CreateBuffer(size_t const size, void * const data);
         void        Bind(void);
+		void		SetName(std::string const name);
 
     private:
         void        Init(void);
-
-    protected:
+		std::string	_name;	
         GLuint      _bufferId;
         GLsizeiptr  _buffSize;
 };

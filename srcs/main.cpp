@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:47:03 by snicolet          #+#    #+#             */
-/*   Updated: 2018/04/29 03:52:40 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/05 16:05:30 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,9 @@ char		*loadkernel(std::string const filepath, size_t *size)
 int		run_window(Mopencl & cl)
 {
 	GlfwWindow	window("Particle System", 1280, 720);
+	Vbo			vbo;
 
+	vbo.SetName(std::string("Dual Triangles Buffer VBO"));
 	(void)cl;
 	// window display part
 	if (!window.Init())
@@ -60,6 +62,8 @@ int		run_window(Mopencl & cl)
 	if (!window.Show())
 		return (EXIT_FAILURE);
 	
+	if (!vbo.loadRenderTriangles())
+		return (EXIT_FAILURE);
 	window.Render();
 	std::cout << "done." << std::endl;
 	return (EXIT_SUCCESS);

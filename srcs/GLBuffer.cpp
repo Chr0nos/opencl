@@ -56,3 +56,8 @@ void GLBuffer::Bind(void)
 {
     glBindBuffer(GL_ARRAY_BUFFER, this->_bufferId);
 }
+
+void GLBuffer::SetName(std::string const name)
+{
+	this->_name = name;
+}
