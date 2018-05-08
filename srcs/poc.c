@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 15:23:26 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/08 19:33:55 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/08 19:55:34 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ static int				run(t_poc *poc)
 		poc->kernel= clCreateKernel(poc->program, "render", &ret);
 		ret = clSetKernelArg(poc->kernel, 0, sizeof(cl_mem), (void *)&poc->a_mem_obj);
 
-//		poc->retbuff = malloc(poc->size);
-//		retbuff = clEnqueueReadBuffer(poc->command_queue, poc->a_mem_obj,
-//				CL_TRUE, 0, poc->retbuff, poc->size, 0, NULL, NULL);
+		poc->retbuff = malloc(poc->size);
+		ret = clEnqueueReadBuffer(poc->command_queue, poc->a_mem_obj,
+				CL_TRUE, 0, poc->size, poc->retbuff, 0, NULL, NULL);
 		clReleaseKernel(poc->kernel);
 		clReleaseProgram(poc->program);
 	}
