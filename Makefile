@@ -13,7 +13,7 @@
 NAME=test
 CC=clang++
 CXXFLAGS=-Wall -Werror -Wextra -std=c++11 -Wvla
-INC=
+INC=-I include
 LINKER=
 BUILDDIR=./build
 SRCDIR=./srcs
@@ -51,3 +51,5 @@ fclean: clean
 
 re: fclean $(NAME)
 
+poc:
+	clang srcs/poc.c -I../libft/include -L../libft -lft -framework OpenCL -o poc

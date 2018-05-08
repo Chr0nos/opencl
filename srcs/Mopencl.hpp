@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:43:24 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/05 17:59:15 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/08 14:37:53 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,9 @@ class	Mopencl
 		cl::Buffer			CreateBuffer(size_t const size);
 		cl::Kernel			RunProgram(void);
 		cl::Kernel			RunProgram(cl::Program & program);
-
+		bool				InitQueue(void);
 
 	private:
-		bool				InitQueue(void);
 		VECTOR_CLASS<cl::Platform>		_platforms;
 		VECTOR_CLASS<cl::Device>		_devices;
 		cl_uint							_selected_platform;

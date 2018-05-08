@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:44:40 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/06 15:35:28 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/08 14:37:10 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,17 +155,18 @@ cl::Buffer Mopencl::CreateBuffer(size_t const size)
 
 bool Mopencl::InitQueue(void)
 {
-	cl_int		err;
+	cl_int					err;
 
+	std::cout << "creating command queue..." << std::endl;
 	err = 0;
-	this->_queue = clCreateCommandQueueWithProperties(this->_context,
-			this->_devices[this->_selected_device],
-			CL_QUEUE_PROFILING_ENABLE,
-			&err);
+	this->_queue = clCreateCommandQueue(this->_context(),
+			this->_devices[this->_selected_device](),
+			0, &err);
 	if (err != 0)
 	{
 		std::cout << "create command queue result: " << err << std::endl;
 		return (false);
 	}
+	std::cout << "command queue ok" << std::endl;
 	return (true);
 }
