@@ -6,11 +6,12 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 15:23:26 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/08 19:55:34 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/12 12:20:02 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #ifdef __APPLE__
 # include <OpenCL/opencl.h>
 #else
@@ -56,6 +57,8 @@ static int				run(t_poc *poc)
 		ret = clSetKernelArg(poc->kernel, 0, sizeof(cl_mem), (void *)&poc->a_mem_obj);
 
 		poc->retbuff = malloc(poc->size);
+
+		// retrive the buffer data
 		ret = clEnqueueReadBuffer(poc->command_queue, poc->a_mem_obj,
 				CL_TRUE, 0, poc->size, poc->retbuff, 0, NULL, NULL);
 		clReleaseKernel(poc->kernel);
