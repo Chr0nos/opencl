@@ -18,7 +18,8 @@ struct				s_config
 	float3			color_start;
 };
 
-void		kernel	render(global struct s_particle *particles, size_t total_kernels_count)
+void		kernel	render(global struct s_particle *particles,
+	size_t total_kernels_count)
 {
 	const int					id = get_global_id(0);
 	const size_t				particles_count = 1024 * 768;

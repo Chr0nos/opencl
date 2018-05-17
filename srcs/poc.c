@@ -115,6 +115,23 @@ static void				run_build_failure(t_poc *poc, const cl_int code)
 		opencl_strerr(code), code);
 }
 
+static void				display_particle(t_particle *particle, size_t amount)
+{
+	size_t		p;
+
+	p = 0;
+	while (p < amount)
+	{
+		ft_printf("%s%f %f %f%s%f %f %f]\n",
+			"position: [",
+			particle->position.x, particle->position.y, particle->position.z,
+			"] - velocity: [",
+			particle->velocity.x, particle->velocity.y, particle->velocity.z);
+		particle++;
+		p++;
+	}
+}
+
 static int				run(t_poc *poc)
 {
 	cl_int				ret;
@@ -130,6 +147,8 @@ static int				run(t_poc *poc)
 	poc->program = clCreateProgramWithSource(poc->context, 1,
 			(const char **)(size_t)&poc->source,
 			(const size_t *)&poc->source_size, &ret);
+	ft_printf("%s%s\n", "program state: ", opencl_strerr(ret));
+
 	ret = clBuildProgram(poc->program, 1, &poc->device_id, NULL, NULL, NULL);
 	if (ret == CL_SUCCESS)
 	{
@@ -158,8 +177,7 @@ static int				run(t_poc *poc)
 		ret = clFinish(poc->command_queue);
 		ft_printf("%s%s %d\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"), ret);
 
-		t_particle		*particle = (t_particle*)(size_t)poc->retbuff;
-		ft_printf("position: [%f %f %f]\n", particle->position.x, particle->position.y, particle->position.z);
+		display_particle((t_particle*)(size_t)poc->retbuff, 10);
 
 		clReleaseKernel(poc->kernel);
 		clReleaseProgram(poc->program);
@@ -190,7 +208,9 @@ int						main(int ac, char **av)
 			            &poc.device_id, &poc.ret_num_devices) != CL_SUCCESS)
 		return (poc_error("failed to get device ids", EXIT_FAILURE));
 	poc.context = clCreateContext(NULL, 1, &poc.device_id, &notify, NULL, &ret);
+	ft_printf("%s%s\n", "context state: ", opencl_strerr(ret));
 	poc.command_queue = clCreateCommandQueue(poc.context, poc.device_id, 0, &ret);
+	ft_printf("%s%s\n", "command queue state: ", opencl_strerr(ret));
 	poc.size = 1024 * 768 * (sizeof(t_particle));
 	poc.filepath = av[1];
 	run(&poc);
