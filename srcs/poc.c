@@ -38,6 +38,15 @@ typedef struct			s_poc
 	cl_device_id		device_id;
 }						t_poc;
 
+#pragma pack(push, 1)
+
+typedef struct			s_particle {
+	cl_float3			position;
+	cl_float3			velocity;
+}						t_particle;
+
+#pragma pack(pop)
+
 typedef struct			s_error_pair {
 	const char			*str;
 	cl_uint				code;
@@ -99,16 +108,23 @@ static int				is_zeroed(t_buffer buffer)
 	return (1);
 }
 
+static void				run_build_failure(t_poc *poc)
+{
+	ft_dprintf(STDERR_FILENO, "%s", "error: failed to build program.\n");
+}
+
 static int				run(t_poc *poc)
 {
 	cl_int				ret;
 
+	poc->local_item_size = 1;
+	poc->global_item_size = 12;
 	poc->source = ft_readfile(poc->filepath, &poc->source_size);
 	if (!poc->source)
 		return (EXIT_FAILURE);
 	poc->a_mem_obj = clCreateBuffer(poc->context, CL_MEM_READ_WRITE,
 		   	poc->size, NULL, &ret);
-
+	ft_printf("buffer size: %lu (%lu)\n", poc->size, sizeof(t_particle));
 	poc->program = clCreateProgramWithSource(poc->context, 1,
 			(const char **)(size_t)&poc->source,
 			(const size_t *)&poc->source_size, &ret);
@@ -120,13 +136,12 @@ static int				run(t_poc *poc)
 		poc->kernel= clCreateKernel(poc->program, "render", &ret);
 		// set first argument to the damn kernel (passing the buffer as param)
 		ret = clSetKernelArg(poc->kernel, 0, sizeof(cl_mem), (void *)&poc->a_mem_obj);
+		clSetKernelArg(poc->kernel, 1, sizeof(size_t), &poc->global_item_size);
 
 		poc->retbuff = ft_memalloc(poc->size);
 		ft_printf("%s%s\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"));
 
 		// it would be great if sometime i runned the kernel, just saying
-		poc->local_item_size = 1;
-		poc->global_item_size = 1;
 		//clGetKernelWorkGroupInfo(poc->kernel, poc->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &poc->local_item_size, NULL);
 		ft_printf("local item size: %lu\n", poc->local_item_size);
 		ret = clEnqueueNDRangeKernel(poc->command_queue, poc->kernel, 1, NULL, &poc->global_item_size,
@@ -141,14 +156,22 @@ static int				run(t_poc *poc)
 		ret = clFinish(poc->command_queue);
 		ft_printf("%s%s %d\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"), ret);
 
+		t_particle		*particle = (t_particle*)(size_t)poc->retbuff;
+		ft_printf("position: [%f %f %f]\n", particle->position.x, particle->position.y, particle->position.z);
+
 		clReleaseKernel(poc->kernel);
 		clReleaseProgram(poc->program);
 	}
 	else
-		ft_dprintf(STDERR_FILENO, "%s", "error: failed to build program.\n");
+		run_build_failure(poc);
 	free(poc->source);
 	clReleaseMemObject(poc->a_mem_obj);
 	return (EXIT_SUCCESS);
+}
+
+static void				notify(const char *errinfo, const void *private_info, size_t cb, void *user_data)
+{
+	ft_dprintf(STDERR_FILENO, "opencl error: %s", errinfo, private_info, user_data);
 }
 
 int						main(int ac, char **av)
@@ -164,9 +187,9 @@ int						main(int ac, char **av)
 	if (clGetDeviceIDs(poc.platform_id, CL_DEVICE_TYPE_ALL, 1,
 			            &poc.device_id, &poc.ret_num_devices) != CL_SUCCESS)
 		return (poc_error("failed to get device ids", EXIT_FAILURE));
-	poc.context = clCreateContext(NULL, 1, &poc.device_id, NULL, NULL, &ret);
+	poc.context = clCreateContext(NULL, 1, &poc.device_id, &notify, NULL, &ret);
 	poc.command_queue = clCreateCommandQueue(poc.context, poc.device_id, 0, &ret);
-	poc.size = 1024 * 768 * sizeof(unsigned int);
+	poc.size = 1024 * 768 * (sizeof(t_particle));
 	poc.filepath = av[1];
 	run(&poc);
 	clReleaseCommandQueue(poc.command_queue);
