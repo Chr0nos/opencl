@@ -71,6 +71,7 @@ static t_error_pair g_errors[] = {
 	(t_error_pair){"mem object allocation failure", CL_MEM_OBJECT_ALLOCATION_FAILURE},
 	(t_error_pair){"invalid event wait list", CL_INVALID_EVENT_WAIT_LIST},
 	(t_error_pair){"out of host memory", CL_OUT_OF_HOST_MEMORY},
+	(t_error_pair){"build program failure",  CL_BUILD_PROGRAM_FAILURE},
 	(t_error_pair){NULL, 0}
 };
 
@@ -108,9 +109,10 @@ static int				is_zeroed(t_buffer buffer)
 	return (1);
 }
 
-static void				run_build_failure(t_poc *poc)
+static void				run_build_failure(t_poc *poc, const cl_int code)
 {
-	ft_dprintf(STDERR_FILENO, "%s", "error: failed to build program.\n");
+	ft_dprintf(STDERR_FILENO, "%s%s (%d)\n", "error: failed to build program: ",
+		opencl_strerr(code), code);
 }
 
 static int				run(t_poc *poc)
@@ -163,7 +165,7 @@ static int				run(t_poc *poc)
 		clReleaseProgram(poc->program);
 	}
 	else
-		run_build_failure(poc);
+		run_build_failure(poc, ret);
 	free(poc->source);
 	clReleaseMemObject(poc->a_mem_obj);
 	return (EXIT_SUCCESS);
