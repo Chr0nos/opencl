@@ -11,6 +11,7 @@ struct				s_particle
 	unsigned int	color;
 };
 
-void		kernel	start(void)
+void		kernel	render(global char *output)
 {
+	output[0] = 1;
 };

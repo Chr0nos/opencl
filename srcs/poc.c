@@ -33,8 +33,71 @@ typedef struct			s_poc
 	char				*source;
 	size_t				source_size;
 	size_t				size;
+	size_t				global_item_size;
+	size_t				local_item_size;
 	cl_device_id		device_id;
 }						t_poc;
+
+typedef struct			s_error_pair {
+	const char			*str;
+	cl_uint				code;
+}						t_error_pair;
+
+static t_error_pair g_errors[] = {
+	(t_error_pair){"success", CL_SUCCESS},
+	(t_error_pair){"invalid program executable", CL_INVALID_PROGRAM_EXECUTABLE},
+	(t_error_pair){"invalid command queue", CL_INVALID_COMMAND_QUEUE},
+	(t_error_pair){"invalid kernel", CL_INVALID_KERNEL},
+	(t_error_pair){"invalid context", CL_INVALID_CONTEXT},
+	(t_error_pair){"invalid kernel args", CL_INVALID_KERNEL_ARGS},
+	(t_error_pair){"invalid work dimention", CL_INVALID_WORK_DIMENSION},
+	(t_error_pair){"invalid global work size", CL_INVALID_GLOBAL_WORK_SIZE},
+	(t_error_pair){"invalid global offset", CL_INVALID_GLOBAL_OFFSET},
+	(t_error_pair){"invalid work group size", CL_INVALID_WORK_GROUP_SIZE},
+	(t_error_pair){"invalid work item size", CL_INVALID_WORK_ITEM_SIZE},
+	(t_error_pair){"misaligned sub buffer offset", CL_MISALIGNED_SUB_BUFFER_OFFSET},
+	(t_error_pair){"invalid image size", CL_INVALID_IMAGE_SIZE},
+	// (t_error_pair){"invalid image format", CL_INVALID_IMAGE_FORMAT},
+	(t_error_pair){"out of ressources", CL_OUT_OF_RESOURCES},
+	(t_error_pair){"mem object allocation failure", CL_MEM_OBJECT_ALLOCATION_FAILURE},
+	(t_error_pair){"invalid event wait list", CL_INVALID_EVENT_WAIT_LIST},
+	(t_error_pair){"out of host memory", CL_OUT_OF_HOST_MEMORY},
+	(t_error_pair){NULL, 0}
+};
+
+static const char		*opencl_strerr(const cl_uint code)
+{
+	size_t				p;
+
+	p = 0;
+	while (g_errors[p].str)
+	{
+		if (g_errors[p].code == code)
+			return (g_errors[p].str);
+		p++;
+	}
+	return ("unknow error");
+}
+
+static int				poc_error(const char *msg, const int retcode)
+{
+	ft_dprintf(STDERR_FILENO, "%s%s\n", "error: ", msg);
+	return (retcode);
+}
+
+static int				is_zeroed(t_buffer buffer)
+{
+	size_t	p;
+
+	p = 0;
+	while (p < buffer.size)
+	{
+		if (buffer.data[p] != 0)
+			return (0);
+		p++;
+	}
+	return (1);
+}
 
 static int				run(t_poc *poc)
 {
@@ -53,14 +116,31 @@ static int				run(t_poc *poc)
 	if (ret == CL_SUCCESS)
 	{
 		ft_printf("%s", "program build success\n");
+		// create da fucking kernel
 		poc->kernel= clCreateKernel(poc->program, "render", &ret);
+		// set first argument to the damn kernel (passing the buffer as param)
 		ret = clSetKernelArg(poc->kernel, 0, sizeof(cl_mem), (void *)&poc->a_mem_obj);
 
-		poc->retbuff = malloc(poc->size);
+		poc->retbuff = ft_memalloc(poc->size);
+		ft_printf("%s%s\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"));
+
+		// it would be great if sometime i runned the kernel, just saying
+		poc->local_item_size = 1;
+		poc->global_item_size = 1;
+		//clGetKernelWorkGroupInfo(poc->kernel, poc->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &poc->local_item_size, NULL);
+		ft_printf("local item size: %lu\n", poc->local_item_size);
+		ret = clEnqueueNDRangeKernel(poc->command_queue, poc->kernel, 1, NULL, &poc->global_item_size,
+			&poc->local_item_size, 0, NULL, NULL);
+		ft_printf("enqueue result: %d -> %s\n", ret, opencl_strerr(ret));
 
 		// retrive the buffer data
 		ret = clEnqueueReadBuffer(poc->command_queue, poc->a_mem_obj,
 				CL_TRUE, 0, poc->size, poc->retbuff, 0, NULL, NULL);
+		// wait for the queue to be complete
+		ret = clFlush(poc->command_queue);
+		ret = clFinish(poc->command_queue);
+		ft_printf("%s%s %d\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"), ret);
+
 		clReleaseKernel(poc->kernel);
 		clReleaseProgram(poc->program);
 	}
@@ -79,16 +159,16 @@ int						main(int ac, char **av)
 	if (ac < 2)
 		return (EXIT_FAILURE);
 	ft_bzero(&poc, sizeof(poc));
-	ret	= clGetPlatformIDs(1, &poc.platform_id, &poc.ret_num_platforms);
-	ret = clGetDeviceIDs(poc.platform_id, CL_DEVICE_TYPE_ALL, 1, 
-			            &poc.device_id, &poc.ret_num_devices);
+	if (clGetPlatformIDs(1, &poc.platform_id, &poc.ret_num_platforms) != CL_SUCCESS)
+		return (poc_error("failed to get platform id", EXIT_FAILURE));
+	if (clGetDeviceIDs(poc.platform_id, CL_DEVICE_TYPE_ALL, 1,
+			            &poc.device_id, &poc.ret_num_devices) != CL_SUCCESS)
+		return (poc_error("failed to get device ids", EXIT_FAILURE));
 	poc.context = clCreateContext(NULL, 1, &poc.device_id, NULL, NULL, &ret);
 	poc.command_queue = clCreateCommandQueue(poc.context, poc.device_id, 0, &ret);
 	poc.size = 1024 * 768 * sizeof(unsigned int);
 	poc.filepath = av[1];
 	run(&poc);
-	ret = clFlush(poc.command_queue);
-	ret = clFinish(poc.command_queue);
 	clReleaseCommandQueue(poc.command_queue);
 	clReleaseContext(poc.context);
 	ft_printf("%p\n", poc.retbuff);
