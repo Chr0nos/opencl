@@ -140,7 +140,7 @@ static cl_int			set_kernel_args(cl_kernel kernel, const size_t n, ...)
 				opencl_strerr(ret));
 			return (ret);
 		}
-		ft_printf("opencl kernel arg %d: OK", i);
+		ft_printf("opencl kernel arg %d: OK\n", i);
 		i++;
 	}
 	va_end(ap);
