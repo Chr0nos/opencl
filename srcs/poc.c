@@ -31,8 +31,7 @@ typedef struct			s_poc
 	cl_mem				a_mem_obj;
 	void				*retbuff;
 	char				*filepath;
-	char				*source;
-	size_t				source_size;
+	t_buffer			source;
 	size_t				size;
 	size_t				global_item_size;
 	size_t				local_item_size;
@@ -171,16 +170,16 @@ static int				run(t_poc *poc)
 
 	poc->local_item_size = 1;
 	poc->global_item_size = 12;
-	poc->source = ft_readfile(poc->filepath, &poc->source_size);
-	if (!poc->source)
+	poc->source.data = ft_readfile(poc->filepath, &poc->source.size);
+	if (!poc->source.data)
 		return (EXIT_FAILURE);
 	poc->a_mem_obj = clCreateBuffer(poc->context, CL_MEM_READ_WRITE,
 		   	poc->size, NULL, &ret);
 	ft_printf("%s%s\n", "buffer state: ", opencl_strerr(ret));
 	ft_printf("buffer size: %lu (%lu)\n", poc->size, sizeof(t_particle));
 	poc->program = clCreateProgramWithSource(poc->context, 1,
-			(const char **)(size_t)&poc->source,
-			(const size_t *)&poc->source_size, &ret);
+			(const char **)(size_t)&poc->source.data,
+			(const size_t *)&poc->source.size, &ret);
 	ft_printf("%s%s\n", "program state: ", opencl_strerr(ret));
 
 	ret = clBuildProgram(poc->program, 1, &poc->device_id, NULL, NULL, NULL);
@@ -220,7 +219,7 @@ static int				run(t_poc *poc)
 	}
 	else
 		run_build_failure(poc, ret);
-	free(poc->source);
+	free(poc->source.data);
 	clReleaseMemObject(poc->a_mem_obj);
 	return (EXIT_SUCCESS);
 }
