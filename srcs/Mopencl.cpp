@@ -15,10 +15,15 @@
 
 Mopencl::Mopencl(void)
 {
-	this->_selected_device = 0;
-	this->_selected_platform = 0;
-	cl::Platform::get(&this->_platforms);
-	std::cout << "init ok" << std::endl;
+	std::cout << "OpenCL init" << std::endl;
+	this->context = 0;
+	this->command_queue = 0;
+	this->kernel = new Kernel;
+	this->platform_id = 0;
+	this->device_id = 0;
+	this->program = 0;
+	this->local_item_size = 1;
+	this->global_item_size = 12;
 }
 
 Mopencl::Mopencl(Mopencl const & src)
@@ -29,6 +34,11 @@ Mopencl::Mopencl(Mopencl const & src)
 Mopencl::~Mopencl(void)
 {
 	std::cout << "destructor called" << std::endl;
+	delete this->kernel;
+	std::cout << "deleting command queue" << std::endl;
+	clReleaseCommandQueue(this->command_queue);
+	std::cout << "deleting context" << std::endl;
+	clReleaseContext(this->context);
 }
 
 Mopencl& Mopencl::operator=(Mopencl const & src)
@@ -39,134 +49,65 @@ Mopencl& Mopencl::operator=(Mopencl const & src)
 	return (*this);
 }
 
-void Mopencl::ListPlatforms()
+void Mopencl::notify(const char *errinfo, const void *private_info,
+	size_t cb, void *user_data)
 {
-	cl_uint						id;
-
-	if (this->_platforms.empty())
-		return ;
-	std::cout << "platforms count: " << this->_platforms.size() << std::endl;
-	id = 0;
-	for (VECTOR_CLASS<cl::Platform>::iterator it = this->_platforms.begin();
-		it != this->_platforms.end(); it++)
-	{
-		cl::Platform		platform(*it);
-
-		std::cout << "id: " << id++ << std::endl;
-		std::cout << "name: " << platform.getInfo<CL_PLATFORM_NAME>() << std::endl;
-		std::cout << "vendor: " << platform.getInfo<CL_PLATFORM_VENDOR>() << std::endl;
-		std::cout << "version: " << platform.getInfo<CL_PLATFORM_VERSION>() << std::endl;
-	}
+	(void)private_info;
+	(void)user_data;
+	(void)cb;
+	std::cout << "error: [notify]: " << errinfo << std::endl;
 }
 
-bool Mopencl::SelectPlatform(const cl_uint id)
+bool Mopencl::errored(cl_int const code)
 {
-	std::cout << "selecting platform: " << id << std::endl;
-	if (id > this->_platforms.size())
+	if (code == CL_SUCCESS)
 		return (false);
-	this->_selected_platform = id;
-	std::cout << "getting devices...";
-	this->_platforms[id - 1].getDevices(CL_DEVICE_TYPE_GPU, &this->_devices);
-	std::cout << " done." << std::endl;
+	for (size_t p = 0; g_errors[p].str ; p++)
+	{
+		if (g_errors[p].code == code)
+		{
+			std::cout << "error: " << g_errors[p].str << " (" << code << ")" << std::endl;
+			return (true);
+		}
+	}
+	std::cout << "error: unknow error (" << code << ")" << std::endl;
 	return (true);
 }
 
-void Mopencl::ListDevices()
+bool Mopencl::Init(std::string & kernel_filepath)
 {
-	if (this->_devices.empty())
-		return ;
-	for (VECTOR_CLASS<cl::Device>::iterator dev = this->_devices.begin();
-		dev != this->_devices.end(); dev++)
-	{
-		std::cout << "device: " << dev->getInfo<CL_DEVICE_NAME>() << std::endl;
-	}
-}
+	cl_int		ret;
 
-bool Mopencl::CreateContext()
-{
-	cl_int		err;
-
-	this->_context = cl::Context(this->_devices,
-		nullptr, // no properties
-		nullptr, // no callback
-		nullptr, // no callback user pointer
-		&err);
-	if (err == CL_SUCCESS)
-	{
-		std::cout << "context ok" << std::endl;
-		return (true);
-	}
-	std::cout << "error while creating context: ";
-	if (err == CL_INVALID_PROPERTY)
-		std::cout << "invalid property";
-	else if (err == CL_INVALID_VALUE)
-		std::cout << "invalid value";
-	else if (err == CL_INVALID_DEVICE_TYPE)
-		std::cout << "invalid device type";
-	else if (err == CL_DEVICE_NOT_AVAILABLE)
-		std::cout << "device not available";
-	else if (err == CL_DEVICE_NOT_FOUND)
-		std::cout << "device not found";
-	else if (err == CL_OUT_OF_HOST_MEMORY)
-		std::cout << "out of memory";
-	std::cout << std::endl;
-	return (false);
-}
-
-void Mopencl::AddSource(const char *kernel, const size_t size)
-{
-	this->_sources.push_back({kernel, size});
-}
-
-bool Mopencl::BuildProgram(void)
-{
-	cl::Program		program(this->_context, this->_sources);
-	cl::Device		device;
-
-	device = this->_devices[this->_selected_device];
-	if (program.build(this->_devices) != CL_SUCCESS)
-	{
-		std::cout << "error: failed to build program: " <<
-			program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device) << std::endl;
+	std::cout << "init opencl" << std::endl;
+	if (this->errored(clGetPlatformIDs(1, &this->platform_id, NULL)))
 		return (false);
-	}
-	std::cout << "program build ok" << std::endl;
-	this->_program = program;
+	if (this->errored(clGetDeviceIDs(this->platform_id, CL_DEVICE_TYPE_GPU, 1, &this->device_id, NULL)))
+		return (false);
+	this->context = clCreateContext(NULL, 1, &this->device_id,
+		&Mopencl::notify, NULL, &ret);
+	this->command_queue = clCreateCommandQueue(this->context, this->device_id, 0, &ret);
+	this->kernel->load(kernel_filepath);
+	this->program = clCreateProgramWithSource(this->context, 1,
+		static_cast<const char **>(static_cast<void*>(&this->kernel->source)),
+		&this->kernel->size, &ret);
+	if (this->errored(ret))
+		return (false);
+	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
+		return (false);
+	if (this->errored(this->kernel->build(this->program)))
+		return (false);
+	if (this->errored(clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(),
+			1, NULL, &this->global_item_size, &this->local_item_size, 0, NULL, NULL)))
+		return (false);
+	// at this point the kernel is running in case of no errors
+	if (!this->errored(ret))
+		this->run();
+	else
+		return (false);
 	return (true);
 }
 
-cl::Kernel Mopencl::RunProgram(void)
+void Mopencl::run(void)
 {
-	return (this->RunProgram(this->_program));
-}
-
-cl::Kernel Mopencl::RunProgram(cl::Program & program)
-{
-	cl::Kernel					kernel(program, "start");
-
-	return (kernel);
-}
-
-cl::Buffer Mopencl::CreateBuffer(size_t const size)
-{
-	cl::Buffer		buff(this->_context, CL_MEM_READ_WRITE, size);
-	return (buff);
-}
-
-bool Mopencl::InitQueue(void)
-{
-	cl_int					err;
-
-	std::cout << "creating command queue..." << std::endl;
-	err = 0;
-	this->_queue = clCreateCommandQueue(this->_context(),
-			this->_devices[this->_selected_device](),
-			0, &err);
-	if (err != 0)
-	{
-		std::cout << "create command queue result: " << err << std::endl;
-		return (false);
-	}
-	std::cout << "command queue ok" << std::endl;
-	return (true);
+	std::cout << "kernel payload is running on the graphic card" << std::endl;
 }

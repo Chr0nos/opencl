@@ -15,38 +15,14 @@
 #include "Vao.hpp"
 #include "Vbo.hpp"
 #include "Shader.hpp"
-#include <fstream>
+#include "kernel.hpp"
 #include <string>
-#include <iostream>
 #define EXIT_SUCCESS	0
 #define EXIT_FAILURE	1
 #define EXIT_BADARG		2
 #define EXIT_CLPROG		3
 #define PARTICLES_COUNT 1000000
 #define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
-
-char		*loadkernel(std::string const filepath, size_t *size)
-{
-	std::ifstream		ifs(filepath, std::ifstream::binary);
-	char				*kernel;
-	size_t				length;
-
-	std::cout << "kernel read start" << std::endl;
-	*size = 0;
-	ifs.seekg(0, ifs.end);
-	length = ifs.tellg();
-	std::cout << "kernel file: " << filepath << std::endl;
-	std::cout << "kernel size: " << length << std::endl;
-	ifs.seekg(0, ifs.beg);
-	kernel = new char[length];
-	if (!kernel)
-		return (nullptr);
-	ifs.read(kernel, length);
-	ifs.close();
-	std::cout << "kernel read ok" << std::endl;
-	*size = length;
-	return (kernel);
-}
 
 int		run_window(Mopencl & cl)
 {
@@ -71,35 +47,21 @@ int		run_window(Mopencl & cl)
 
 int		main(int ac, char **av)
 {
-	size_t		kernel_size;
-	char		*kernel;
+	std::string	filepath = std::string(av[1]);
 	Mopencl		cl;
-
 
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	kernel = loadkernel(av[1], &kernel_size);
-	if (!kernel)
-		return (EXIT_FAILURE);
-	cl.ListPlatforms();
-	cl.SelectPlatform(1);
-	cl.ListDevices();
-	if (!cl.CreateContext())
-		return (EXIT_FAILURE);
-	cl.AddSource(kernel, kernel_size);
-	if (!cl.BuildProgram())
-		return (EXIT_CLPROG);
-	// not needed anymore.
-	delete kernel;
-	cl.InitQueue();
+	cl.Init(filepath);
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
 	std::cout << "making particles mvram buffer" << std::endl;
-	cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
+	// cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
 	std::cout << "vram buffer done (" << PARTICLES_MEM << ")" << std::endl;
 	// passing buffer to the program
-	cl.RunProgram().setArg(0, test);
-	return (run_window(cl));
+	// cl.RunProgram().setArg(0, test);
+	// return (run_window(cl));
+	return (EXIT_SUCCESS);
 }

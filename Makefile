@@ -6,7 +6,7 @@
 #*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        *#
 #*                                                +#+#+#+#+#+   +#+           *#
 #*   Created: 2018/04/25 20:11:05 by snicolet          #+#    #+#             *#
-#*   Updated: 2018/05/18 20:22:40 by snicolet         ###   ########.fr       *#
+#*   Updated: 2018/05/18 22:19:32 by snicolet         ###   ########.fr       *#
 #*                                                                            *#
 #* ************************************************************************** *#
 
@@ -19,7 +19,7 @@ LINKER=
 BUILDDIR=./build
 SRCDIR=./srcs
 
-SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp GLBuffer.cpp Vbo.cpp Shader.cpp
+SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp GLBuffer.cpp Vbo.cpp Shader.cpp kernel.cpp
 
 OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
 

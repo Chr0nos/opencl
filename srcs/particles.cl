@@ -34,7 +34,7 @@ void		kernel	render(global struct s_particle *particles,
 	{
 		particle = &particles[offset + p];
 		particle->position = (float3){1.0f, 42.0f, -1.0f};
-		particle->velocity = (float3){0.0f, 0.0f, 0.0f};
+		particle->velocity = (float3){1.0f * p, 0.0f, 0.0f};
 	}
 
 	printf("[%d] -> finished\n", id);
