@@ -73,6 +73,8 @@ static t_error_pair g_errors[] = {
 	(t_error_pair){"invalid event wait list", CL_INVALID_EVENT_WAIT_LIST},
 	(t_error_pair){"out of host memory", CL_OUT_OF_HOST_MEMORY},
 	(t_error_pair){"build program failure",  CL_BUILD_PROGRAM_FAILURE},
+	(t_error_pair){"invalid value", CL_INVALID_VALUE},
+	(t_error_pair){"invalid platform", CL_INVALID_PLATFORM},
 	(t_error_pair){NULL, 0}
 };
 
@@ -228,6 +230,25 @@ static void				notify(const char *errinfo, const void *private_info, size_t cb, 
 	ft_dprintf(STDERR_FILENO, "opencl error: %s", errinfo, private_info, user_data, cb);
 }
 
+static void				display_platform_information(cl_platform_id id, cl_platform_info name,
+	const char *prefix)
+{
+	cl_int		ret;
+	size_t		size;
+	char		*buffer;
+
+	size = 0;
+	if ((ret = clGetPlatformInfo(id, name, 0, NULL, &size)) != CL_SUCCESS)
+	{
+		ft_dprintf(STDERR_FILENO, "error: %s\n", opencl_strerr(ret));
+		return ;
+	}
+	buffer = malloc(size);
+	clGetPlatformInfo(id, name, size, buffer, NULL);
+	ft_printf("%s%.*s\n", prefix, size, buffer);
+	free(buffer);
+}
+
 int						main(int ac, char **av)
 {
 	cl_int				ret;
@@ -241,6 +262,10 @@ int						main(int ac, char **av)
 	if (clGetDeviceIDs(poc.platform_id, CL_DEVICE_TYPE_ALL, 1,
 			            &poc.device_id, &poc.ret_num_devices) != CL_SUCCESS)
 		return (poc_error("failed to get device ids", EXIT_FAILURE));
+	display_platform_information(poc.platform_id, CL_PLATFORM_PROFILE, "platform profile: ");
+	display_platform_information(poc.platform_id, CL_PLATFORM_VERSION, "opencl version: ");
+	display_platform_information(poc.platform_id, CL_PLATFORM_NAME, "platform name: ");
+	display_platform_information(poc.platform_id, CL_PLATFORM_EXTENSIONS, "extenssions: ");
 	poc.context = clCreateContext(NULL, 1, &poc.device_id, &notify, NULL, &ret);
 	ft_printf("%s%s\n", "context state: ", opencl_strerr(ret));
 	poc.command_queue = clCreateCommandQueue(poc.context, poc.device_id, 0, &ret);
