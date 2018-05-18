@@ -22,6 +22,8 @@ Mopencl::Mopencl(void)
 	this->platform_id = 0;
 	this->device_id = 0;
 	this->program = 0;
+	this->local_item_size = 1;
+	this->global_item_size = 12;
 }
 
 Mopencl::Mopencl(Mopencl const & src)
@@ -90,5 +92,18 @@ bool Mopencl::Init(std::string & kernel_filepath)
 		return (false);
 	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
 		return (false);
+	ret = this->kernel->build(this->program);
+	ret = clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(), 1, NULL,
+		&this->global_item_size, &this->local_item_size, 0, NULL, NULL);
+	// at this point the kernel is running in case of no errors
+	if (!this->errored(ret))
+		this->run();
+	else
+		return (false);
 	return (true);
+}
+
+void Mopencl::run(void)
+{
+	std::cout << "kernel payload is running on the graphic card" << std::endl;
 }

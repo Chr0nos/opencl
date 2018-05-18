@@ -47,3 +47,17 @@ char *Kernel::getSource(void)
 {
     return (this->source);
 }
+
+cl_int Kernel::build(cl_program program)
+{
+    cl_int      ret;
+
+    std::cout << "Kernel build (" << this->path << ")" << std::endl;
+    this->id = clCreateKernel(program, this->entrypoint.c_str(), &ret);
+    return (ret);
+}
+
+cl_kernel Kernel::getId(void)
+{
+    return (this->id);
+}

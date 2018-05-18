@@ -10,19 +10,23 @@
 # include <fstream>
 # include <string>
 # include <iostream>
+# include <vector>
 
 class Kernel
 {
     public:
-        Kernel(void);
-        ~Kernel(void);
+                    Kernel(void);
+                   ~Kernel(void);
         size_t      length(void);
         char        *getSource(void);
         bool        load(std::string &filepath);
+        cl_int      build(cl_program program);
+        cl_kernel   getId(void);
 
         char        *source;
         std::string entrypoint;
         size_t      size;
+
 
     private:
         const char  *path;

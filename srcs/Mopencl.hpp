@@ -51,7 +51,6 @@ static t_error_pair g_errors[] = {
 	(t_error_pair){NULL, 0}
 };
 
-
 class	Mopencl
 {
 	public:
@@ -71,6 +70,11 @@ class	Mopencl
 		cl_program			program;
 		Kernel				*kernel;
 		cl_device_id		device_id;
+		size_t				global_item_size;
+		size_t				local_item_size;
+
+	protected:
+		void				run(void);
 };
 
 #endif
