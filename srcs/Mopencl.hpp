@@ -59,7 +59,7 @@ class	Mopencl
 							Mopencl(Mopencl const & src);
 							~Mopencl(void);
 		Mopencl&			operator=(Mopencl const & src);
-		bool				Init(const char *kernel_code, const size_t kernel_size);
+		bool				Init(std::string & kernel_filepath);
 		void static			notify(const char *errinfo, const void *private_info,
 			size_t cb, void *user_data);
 
@@ -69,7 +69,7 @@ class	Mopencl
 		cl_command_queue	command_queue;
 		cl_platform_id		platform_id;
 		cl_program			program;
-		cl_kernel			kernel;
+		Kernel				*kernel;
 		cl_device_id		device_id;
 };
 

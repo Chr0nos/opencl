@@ -48,13 +48,12 @@ int		run_window(Mopencl & cl)
 int		main(int ac, char **av)
 {
 	std::string	filepath = std::string(av[1]);
-	Kernel		kernel(filepath);
 	Mopencl		cl;
 
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	cl.Init(kernel.source, kernel.size);
+	cl.Init(filepath);
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;

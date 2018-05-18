@@ -15,13 +15,13 @@
 
 Mopencl::Mopencl(void)
 {
+	std::cout << "OpenCL init" << std::endl;
 	this->context = 0;
 	this->command_queue = 0;
-	this->kernel = 0;
+	this->kernel = new Kernel;
 	this->platform_id = 0;
 	this->device_id = 0;
 	this->program = 0;
-	std::cout << "init ok" << std::endl;
 }
 
 Mopencl::Mopencl(Mopencl const & src)
@@ -32,7 +32,10 @@ Mopencl::Mopencl(Mopencl const & src)
 Mopencl::~Mopencl(void)
 {
 	std::cout << "destructor called" << std::endl;
+	delete this->kernel;
+	std::cout << "deleting command queue" << std::endl;
 	clReleaseCommandQueue(this->command_queue);
+	std::cout << "deleting context" << std::endl;
 	clReleaseContext(this->context);
 }
 
@@ -69,7 +72,7 @@ bool Mopencl::errored(cl_int const code)
 	return (true);
 }
 
-bool Mopencl::Init(const char *kernel_code, const size_t kernel_size)
+bool Mopencl::Init(std::string & kernel_filepath)
 {
 	cl_int		ret;
 
@@ -79,8 +82,10 @@ bool Mopencl::Init(const char *kernel_code, const size_t kernel_size)
 	this->context = clCreateContext(NULL, 1, &this->device_id,
 		&Mopencl::notify, NULL, &ret);
 	this->command_queue = clCreateCommandQueue(this->context, this->device_id, 0, &ret);
-	this->program = clCreateProgramWithSource(this->context, 1, &kernel_code,
-		&kernel_size, &ret);
+	this->kernel->load(kernel_filepath);
+	this->program = clCreateProgramWithSource(this->context, 1,
+		static_cast<const char **>(static_cast<void*>(&this->kernel->source)),
+		&this->kernel->size, &ret);
 	if (this->errored(ret))
 		return (false);
 	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
