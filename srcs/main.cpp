@@ -94,6 +94,7 @@ int		main(int ac, char **av)
 	delete kernel;
 	cl.InitQueue();
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
+
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
 	std::cout << "making particles mvram buffer" << std::endl;
 	cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
