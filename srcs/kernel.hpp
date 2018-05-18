@@ -21,7 +21,9 @@ class Kernel
         bool        load(std::string &filepath);
 
         char        *source;
+        std::string entrypoint;
         size_t      size;
+
     private:
         const char  *path;
         cl_kernel   id;
