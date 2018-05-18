@@ -17,6 +17,7 @@
 #else
 # include <CL/cl.h>
 #endif
+#include <stdarg.h>
 
 typedef struct			s_poc 
 {
@@ -45,12 +46,12 @@ typedef struct			s_particle {
 	cl_float3			velocity;
 }						t_particle;
 
-#pragma pack(pop)
-
 typedef struct			s_error_pair {
 	const char			*str;
-	cl_uint				code;
+	cl_int				code;
 }						t_error_pair;
+
+#pragma pack(pop)
 
 static t_error_pair g_errors[] = {
 	(t_error_pair){"success", CL_SUCCESS},
@@ -75,7 +76,7 @@ static t_error_pair g_errors[] = {
 	(t_error_pair){NULL, 0}
 };
 
-static const char		*opencl_strerr(const cl_uint code)
+static const char		*opencl_strerr(const cl_int code)
 {
 	size_t				p;
 
@@ -111,6 +112,7 @@ static int				is_zeroed(t_buffer buffer)
 
 static void				run_build_failure(t_poc *poc, const cl_int code)
 {
+	(void)poc;
 	ft_dprintf(STDERR_FILENO, "%s%s (%d)\n", "error: failed to build program: ",
 		opencl_strerr(code), code);
 }
@@ -124,12 +126,41 @@ static void				display_particle(t_particle *particle, size_t amount)
 	{
 		ft_printf("%s%f %f %f%s%f %f %f]\n",
 			"position: [",
-			particle->position.x, particle->position.y, particle->position.z,
+			(double)particle->position.x, (double)particle->position.y, (double)particle->position.z,
 			"] - velocity: [",
-			particle->velocity.x, particle->velocity.y, particle->velocity.z);
+			(double)particle->velocity.x, (double)particle->velocity.y, (double)particle->velocity.z);
 		particle++;
 		p++;
 	}
+}
+
+static cl_int			set_kernel_args(cl_kernel kernel, const size_t n, ...)
+{
+	va_list		ap;
+	cl_int		ret;
+	size_t		i;
+	void		*ptr;
+	size_t		size;
+
+	va_start(ap, n);
+	i = 0;
+	while (i < n)
+	{
+		ptr = va_arg(ap, void*);
+		size = va_arg(ap, size_t);
+		ret = clSetKernelArg(kernel, (cl_uint)i, size, ptr);
+		if (ret != CL_SUCCESS)
+		{
+			ft_dprintf(STDERR_FILENO, "%s%s%lu%s\n",
+				"error: failed to set kernel argument (", i, "): ",
+				opencl_strerr(ret));
+			return (ret);
+		}
+		ft_printf("opencl kernel arg %d: OK", i);
+		i++;
+	}
+	va_end(ap);
+	return (CL_SUCCESS);
 }
 
 static int				run(t_poc *poc)
@@ -143,6 +174,7 @@ static int				run(t_poc *poc)
 		return (EXIT_FAILURE);
 	poc->a_mem_obj = clCreateBuffer(poc->context, CL_MEM_READ_WRITE,
 		   	poc->size, NULL, &ret);
+	ft_printf("%s%s\n", "buffer state: ", opencl_strerr(ret));
 	ft_printf("buffer size: %lu (%lu)\n", poc->size, sizeof(t_particle));
 	poc->program = clCreateProgramWithSource(poc->context, 1,
 			(const char **)(size_t)&poc->source,
@@ -156,14 +188,15 @@ static int				run(t_poc *poc)
 		// create da fucking kernel
 		poc->kernel= clCreateKernel(poc->program, "render", &ret);
 		// set first argument to the damn kernel (passing the buffer as param)
-		ret = clSetKernelArg(poc->kernel, 0, sizeof(cl_mem), (void *)&poc->a_mem_obj);
-		clSetKernelArg(poc->kernel, 1, sizeof(size_t), &poc->global_item_size);
+		ret = set_kernel_args(poc->kernel, 2,
+			(void*)&poc->a_mem_obj, sizeof(cl_mem),
+			&poc->global_item_size, sizeof(size_t));
 
 		poc->retbuff = ft_memalloc(poc->size);
 		ft_printf("%s%s\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"));
 
 		// it would be great if sometime i runned the kernel, just saying
-		//clGetKernelWorkGroupInfo(poc->kernel, poc->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &poc->local_item_size, NULL);
+		// clGetKernelWorkGroupInfo(poc->kernel, poc->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &poc->local_item_size, NULL);
 		ft_printf("local item size: %lu\n", poc->local_item_size);
 		ret = clEnqueueNDRangeKernel(poc->command_queue, poc->kernel, 1, NULL, &poc->global_item_size,
 			&poc->local_item_size, 0, NULL, NULL);
@@ -175,7 +208,8 @@ static int				run(t_poc *poc)
 		// wait for the queue to be complete
 		ret = clFlush(poc->command_queue);
 		ret = clFinish(poc->command_queue);
-		ft_printf("%s%s %d\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"), ret);
+		ft_printf("%s%s %d\n", "buffer zeored: ",
+			(is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"), ret);
 
 		display_particle((t_particle*)(size_t)poc->retbuff, 10);
 
@@ -191,7 +225,7 @@ static int				run(t_poc *poc)
 
 static void				notify(const char *errinfo, const void *private_info, size_t cb, void *user_data)
 {
-	ft_dprintf(STDERR_FILENO, "opencl error: %s", errinfo, private_info, user_data);
+	ft_dprintf(STDERR_FILENO, "opencl error: %s", errinfo, private_info, user_data, cb);
 }
 
 int						main(int ac, char **av)

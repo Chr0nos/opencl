@@ -6,13 +6,14 @@
 #*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        *#
 #*                                                +#+#+#+#+#+   +#+           *#
 #*   Created: 2018/04/25 20:11:05 by snicolet          #+#    #+#             *#
-#*   Updated: 2018/05/12 12:13:29 by snicolet         ###   ########.fr       *#
+#*   Updated: 2018/05/18 15:50:47 by snicolet         ###   ########.fr       *#
 #*                                                                            *#
 #* ************************************************************************** *#
 
 NAME=test
 CC=clang++
 CXXFLAGS=-Wall -Werror -Wextra -std=c++11 -Wvla
+CFLAGS=-Wall -Werror -Wextra -Wvla -Weverything
 INC=-I include
 LINKER=
 BUILDDIR=./build
@@ -51,5 +52,8 @@ fclean: clean
 
 re: fclean $(NAME)
 
-poc:
-	clang srcs/poc.c -I../libft/include -L../libft -lft $(LINKER) -o poc
+poc-clean:
+	$(RM) poc
+
+poc: poc-clean
+	clang $(CFLAGS) srcs/poc.c -I../libft/include -L../libft -lft $(LINKER) -o poc
