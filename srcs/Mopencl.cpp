@@ -79,8 +79,10 @@ bool Mopencl::Init(std::string & kernel_filepath)
 	cl_int		ret;
 
 	std::cout << "init opencl" << std::endl;
-	clGetPlatformIDs(1, &this->platform_id, NULL);
-	clGetDeviceIDs(this->platform_id, CL_DEVICE_TYPE_GPU, 1, &this->device_id, NULL);
+	if (this->errored(clGetPlatformIDs(1, &this->platform_id, NULL)))
+		return (false);
+	if (this->errored(clGetDeviceIDs(this->platform_id, CL_DEVICE_TYPE_GPU, 1, &this->device_id, NULL)))
+		return (false);
 	this->context = clCreateContext(NULL, 1, &this->device_id,
 		&Mopencl::notify, NULL, &ret);
 	this->command_queue = clCreateCommandQueue(this->context, this->device_id, 0, &ret);
@@ -92,9 +94,11 @@ bool Mopencl::Init(std::string & kernel_filepath)
 		return (false);
 	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
 		return (false);
-	ret = this->kernel->build(this->program);
-	ret = clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(), 1, NULL,
-		&this->global_item_size, &this->local_item_size, 0, NULL, NULL);
+	if (this->errored(this->kernel->build(this->program)))
+		return (false);
+	if (this->errored(clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(),
+			1, NULL, &this->global_item_size, &this->local_item_size, 0, NULL, NULL)))
+		return (false);
 	// at this point the kernel is running in case of no errors
 	if (!this->errored(ret))
 		this->run();
