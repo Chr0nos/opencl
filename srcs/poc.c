@@ -97,20 +97,6 @@ static int				poc_error(const char *msg, const int retcode)
 	return (retcode);
 }
 
-static int				is_zeroed(t_buffer buffer)
-{
-	size_t	p;
-
-	p = 0;
-	while (p < buffer.size)
-	{
-		if (buffer.data[p] != 0)
-			return (0);
-		p++;
-	}
-	return (1);
-}
-
 static void				run_build_failure(t_poc *poc, const cl_int code)
 {
 	(void)poc;
@@ -127,9 +113,13 @@ static void				display_particle(t_particle *particle, size_t amount)
 	{
 		ft_printf("%s%f %f %f%s%f %f %f]\n",
 			"position: [",
-			(double)particle->position.x, (double)particle->position.y, (double)particle->position.z,
+			(double)particle->position.x,
+			(double)particle->position.y,
+			(double)particle->position.z,
 			"] - velocity: [",
-			(double)particle->velocity.x, (double)particle->velocity.y, (double)particle->velocity.z);
+			(double)particle->velocity.x,
+			(double)particle->velocity.y,
+			(double)particle->velocity.z);
 		particle++;
 		p++;
 	}
@@ -194,7 +184,6 @@ static int				run(t_poc *poc)
 			&poc->global_item_size, sizeof(size_t));
 
 		poc->retbuff = ft_memalloc(poc->size);
-		ft_printf("%s%s\n", "buffer zeored: ", (is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"));
 
 		// it would be great if sometime i runned the kernel, just saying
 		// clGetKernelWorkGroupInfo(poc->kernel, poc->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &poc->local_item_size, NULL);
@@ -209,8 +198,6 @@ static int				run(t_poc *poc)
 		// wait for the queue to be complete
 		ret = clFlush(poc->command_queue);
 		ret = clFinish(poc->command_queue);
-		ft_printf("%s%s %d\n", "buffer zeored: ",
-			(is_zeroed((t_buffer){ poc->retbuff, poc->size }) == 1 ? "yes" : "no"), ret);
 
 		display_particle((t_particle*)(size_t)poc->retbuff, 10);
 
