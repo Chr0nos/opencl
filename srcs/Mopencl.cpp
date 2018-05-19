@@ -74,7 +74,7 @@ bool Mopencl::errored(cl_int const code)
 	return (true);
 }
 
-bool Mopencl::Init(std::string & kernel_filepath)
+bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint)
 {
 	cl_int		ret;
 
@@ -94,7 +94,7 @@ bool Mopencl::Init(std::string & kernel_filepath)
 		return (false);
 	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
 		return (false);
-	if (this->errored(this->kernel->build(this->program)))
+	if (this->errored(this->kernel->build(this->program, entrypoint)))
 		return (false);
 	if (this->errored(clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(),
 			1, NULL, &this->global_item_size, &this->local_item_size, 0, NULL, NULL)))

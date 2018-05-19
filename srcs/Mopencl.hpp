@@ -58,7 +58,7 @@ class	Mopencl
 							Mopencl(Mopencl const & src);
 							~Mopencl(void);
 		Mopencl&			operator=(Mopencl const & src);
-		bool				Init(std::string & kernel_filepath);
+		bool				Init(std::string & kernel_filepath, std::string & entrypoint);
 		void static			notify(const char *errinfo, const void *private_info,
 			size_t cb, void *user_data);
 

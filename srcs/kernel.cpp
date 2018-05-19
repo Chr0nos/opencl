@@ -48,10 +48,11 @@ char *Kernel::getSource(void)
     return (this->source);
 }
 
-cl_int Kernel::build(cl_program program)
+cl_int Kernel::build(cl_program program, std::string & entrypoint)
 {
     cl_int      ret;
 
+    this->entrypoint = entrypoint;
     std::cout << "Kernel build (" << this->path << ")" << std::endl;
     this->id = clCreateKernel(program, this->entrypoint.c_str(), &ret);
     return (ret);

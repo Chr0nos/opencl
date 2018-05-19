@@ -20,7 +20,7 @@ class Kernel
         size_t      length(void);
         char        *getSource(void);
         bool        load(std::string &filepath);
-        cl_int      build(cl_program program);
+        cl_int      build(cl_program program, std::string & entrypoint);
         cl_kernel   getId(void);
 
         char        *source;
