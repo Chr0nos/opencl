@@ -11,6 +11,8 @@ Kernel::Kernel(void)
 
 Kernel::~Kernel(void)
 {
+    if (this->source)
+        delete this->source;
     std::cout << "Kernel destroyed (" << this->path << ")" << std::endl;
     clReleaseKernel(this->id);
 }
