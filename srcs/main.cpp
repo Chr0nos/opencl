@@ -53,7 +53,8 @@ int		main(int ac, char **av)
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	cl.Init(filepath);
+	if (!(cl.Init(filepath)))
+		return (EXIT_FAILURE);
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
