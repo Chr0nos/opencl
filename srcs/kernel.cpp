@@ -33,6 +33,8 @@ bool Kernel::load(std::string & filepath)
 	std::cout << "kernel file: " << filepath << std::endl;
 	std::cout << "kernel size: " << length << std::endl;
 	ifs.seekg(0, ifs.beg);
+    if (this->source)
+        delete this->source;
 	this->source = new char[length];
 	if (!this->source)
 		return (false);
@@ -40,6 +42,7 @@ bool Kernel::load(std::string & filepath)
 	ifs.close();
 	std::cout << "kernel read ok" << std::endl;
 	this->size = length;
+    this->id = 0;
     return (true);
 }
 
