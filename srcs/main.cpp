@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:47:03 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/08 14:38:00 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/19 18:22:39 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ int		main(int ac, char **av)
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	cl.Init(filepath, kernel_entrypoint);
+	if (!(cl.Init(filepath, kernel_entrypoint)))
+		return (EXIT_FAILURE);
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
