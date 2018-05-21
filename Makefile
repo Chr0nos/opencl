@@ -12,7 +12,7 @@
 
 NAME=test
 CC=clang++
-CXXFLAGS=-Wall -Werror -Wextra -std=c++11 -Wvla -Wsign-conversion
+CXXFLAGS=-Wall -Werror -Wextra -std=c++14 -Wvla -Wsign-conversion
 CFLAGS=-Wall -Werror -Wextra -Wvla -Weverything
 INC=-I include
 LINKER=

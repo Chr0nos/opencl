@@ -48,7 +48,7 @@ bool Shader::ShowError(void)
 	if (!error_len)
         return (false);
     std::cout << "Shader error found" << std::endl;
-    error = new char[error_len + 1];
+    error = new char[static_cast<size_t>(error_len + 1)];
     if (!error)
         return (true);
 	error[error_len] = '\0';

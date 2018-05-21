@@ -71,10 +71,9 @@ cl_kernel Kernel::getId(void)
 cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
 {
     cl_uint                           index;
-    std::vector<KernelArg*>::iterator i;
 
     index = 0;
-    for (i = args.begin(); i != args.end(); i++)
+    for (auto i = args.begin(); i != args.end(); i++)
     {
         std::cout << "Kernel loading argument: " << index <<
             " (" << (*i)->size << ")" << std::endl;
@@ -87,7 +86,7 @@ cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
         // after allocate the (*i)->size will be sizeof(cl_mem)
         // in case of no allocation required the size will be the one passed at the
         // KernelArg creation
-        if (clSetKernelArg(this->id, index, (*i)->size, &(*i)->ptr) != CL_SUCCESS)
+        if (clSetKernelArg(this->id, index, (*i)->size, (*i)->ptr) != CL_SUCCESS)
         {
             std::cout << "Kernel argument " << index << " failed" << std::endl;
             return (CL_INVALID_ARG_VALUE);

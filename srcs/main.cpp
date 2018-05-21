@@ -95,7 +95,7 @@ int		main(int ac, char **av)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
 	args.push_back(new KernelArg(nullptr, PARTICLES_MEM, CL_MEM_READ_WRITE, true));
-	args.push_back(new KernelArg(&particles_count, sizeof(size_t), CL_MEM_READ_ONLY, false));
+	args.push_back(new KernelArg(&particles_count, sizeof(particles_count), CL_MEM_READ_ONLY, false));
 
 	if (!(cl.Init(filepath, kernel_entrypoint, args)))
 	{

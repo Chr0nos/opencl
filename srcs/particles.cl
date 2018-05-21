@@ -19,7 +19,7 @@ struct				s_config
 };
 
 void		kernel	render(__global struct s_particle *particles,
-	const size_t particles_count)
+	size_t particles_count)
 {
 	const int					id = get_global_id(0);
 	const size_t				total_kernels_count = get_global_size(0);
