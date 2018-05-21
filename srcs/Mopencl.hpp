@@ -63,6 +63,7 @@ class	Mopencl
 			std::string & entrypoint, std::vector<KernelArg*> & args);
 		void static			notify(const char *errinfo, const void *private_info,
 			size_t cb, void *user_data);
+		void static			deleteArgs(std::vector<KernelArg*> & args);
 
 	private:
 		bool				errored(cl_int const code);

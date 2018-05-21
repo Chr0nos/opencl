@@ -118,6 +118,14 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 	return (true);
 }
 
+void Mopencl::deleteArgs(std::vector<KernelArg*> & args)
+{
+	std::vector<KernelArg*>::iterator	i;
+
+	for (i = args.begin(); i != args.end(); i++)
+		delete *i;
+}
+
 void Mopencl::run(void)
 {
 	std::cout << "kernel payload is running on the graphic card" << std::endl;

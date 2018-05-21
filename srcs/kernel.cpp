@@ -83,7 +83,7 @@ cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
                 " bytes of memory on device" << std::endl;
             return (CL_MEM_OBJECT_ALLOCATION_FAILURE);
         }
-        if (clSetKernelArg(this->id, index, (*i)->size, (*i)->hostptr) != CL_SUCCESS)
+        if (clSetKernelArg(this->id, index, sizeof(cl_mem), &(*i)->id) != CL_SUCCESS)
         {
             std::cout << "Kernel argument " << index << " failed" << std::endl;
             return (CL_INVALID_ARG_VALUE);

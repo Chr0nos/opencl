@@ -70,19 +70,14 @@ int		main(int ac, char **av)
 
 	if (!(cl.Init(filepath, kernel_entrypoint, args)))
 	{
-		delete args[1];
-		delete args[0];
+		Mopencl::deleteArgs(args);
 		return (EXIT_FAILURE);
 	}
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
-	std::cout << "making particles mvram buffer" << std::endl;
-	// cl::Buffer test = cl.CreateBuffer(PARTICLES_MEM);
-	std::cout << "vram buffer done (" << PARTICLES_MEM << ")" << std::endl;
-	// passing buffer to the program
-	// cl.RunProgram().setArg(0, test);
 	// return (run_window(cl));
+	Mopencl::deleteArgs(args);
 	return (EXIT_SUCCESS);
 
 }
