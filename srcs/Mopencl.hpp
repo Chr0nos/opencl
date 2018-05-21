@@ -65,6 +65,7 @@ class	Mopencl
 			size_t cb, void *user_data);
 		void static			deleteArgs(std::vector<KernelArg*> & args);
 		bool				getBuff(cl_mem buff, size_t size, void *target);
+		void				showBuildInfo(void);
 
 	private:
 		bool				errored(cl_int const code);

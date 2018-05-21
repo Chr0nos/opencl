@@ -103,7 +103,10 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 	if (this->errored(ret))
 		return (false);
 	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
+	{
+		this->showBuildInfo();
 		return (false);
+	}	
 	if (this->errored(this->kernel->build(this->program, entrypoint)))
 		return (false);
 
@@ -120,6 +123,23 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 	else
 		return (false);
 	return (true);
+}
+
+void Mopencl::showBuildInfo(void)
+{
+	char		*str;
+	size_t		size;
+
+	clGetProgramBuildInfo(this->program, this->device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &size);
+	if (!size)
+	{
+		std::cout << "Mopencl: build log not available" << std::endl;
+		return ;
+	}
+	str = new char[size];
+	clGetProgramBuildInfo(this->program, this->device_id, CL_PROGRAM_BUILD_LOG, size, str, NULL);
+	std::cout << "Mopencl: build log: " << str << std::endl;
+	delete[] str;
 }
 
 void Mopencl::deleteArgs(std::vector<KernelArg*> & args)
