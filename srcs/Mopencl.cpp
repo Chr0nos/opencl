@@ -156,7 +156,7 @@ void Mopencl::deleteArgs(std::vector<KernelArg*> & args)
 void Mopencl::run(void)
 {
 	std::cout << "kernel payload is running on the graphic card" << std::endl;
-	clFlush(this->command_queue);
+	std::cout << "Mopencl flush ret code: " << clFlush(this->command_queue) << std::endl;
 	clFinish(this->command_queue);
 }
 

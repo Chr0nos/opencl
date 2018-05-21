@@ -38,8 +38,6 @@ typedef struct			s_poc
 	cl_device_id		device_id;
 }						t_poc;
 
-#pragma pack(push, 1)
-
 typedef struct			s_particle {
 	cl_float3			position;
 	cl_float3			velocity;
@@ -49,8 +47,6 @@ typedef struct			s_error_pair {
 	const char			*str;
 	cl_int				code;
 }						t_error_pair;
-
-#pragma pack(pop)
 
 static t_error_pair g_errors[] = {
 	(t_error_pair){"success", CL_SUCCESS},

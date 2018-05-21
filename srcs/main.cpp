@@ -24,14 +24,10 @@
 #define EXIT_CLPROG		3
 #define PARTICLES_COUNT 1000000
 
-# pragma pack(push, 1)
-
 typedef struct			s_particle {
 	cl_float3			position;
 	cl_float3			velocity;
 }						t_particle;
-
-# pragma pack(pop)
 
 #define	PARTICLES_MEM (sizeof(t_particle) * PARTICLES_COUNT)
 
@@ -55,26 +51,6 @@ int		run_window(Mopencl & cl)
 	std::cout << "done." << std::endl;
 	return (EXIT_SUCCESS);
 }
-
-// static void				display_particle(t_particle *particle, size_t amount)
-// {
-// 	size_t		p;
-
-// 	p = 0;
-// 	while (p < amount)
-// 	{
-// 		std::cout << "[" << p << "] position: " <<
-// 			particle->position.x <<
-// 			particle->position.y <<
-// 			particle->position.z <<
-// 			" - velocity: " <<
-// 			particle->velocity.x <<
-// 			particle->velocity.y <<
-// 			particle->velocity.z << std::endl;
-// 		particle++;
-// 		p++;
-// 	}
-// }
 
 // main logic:
 // Mopencl
