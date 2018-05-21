@@ -24,6 +24,11 @@
 #define PARTICLES_COUNT 1000000
 #define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
 
+typedef struct			s_particle {
+	cl_float3			position;
+	cl_float3			velocity;
+}						t_particle;
+
 int		run_window(Mopencl & cl)
 {
 	GlfwWindow	window("Particle System", 1280, 720);
@@ -54,7 +59,11 @@ int		main(int ac, char **av)
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	if (!(cl.Init(filepath, kernel_entrypoint)))
+	std::vector<KernelArg*>		args;
+
+	args.push_back(new KernelArg(nullptr, PARTICLES_MEM, CL_MEM_READ_WRITE));
+
+	if (!(cl.Init(filepath, kernel_entrypoint, args)))
 		return (EXIT_FAILURE);
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 

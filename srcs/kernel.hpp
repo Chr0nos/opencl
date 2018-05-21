@@ -11,6 +11,7 @@
 # include <string>
 # include <iostream>
 # include <vector>
+# include "KernelArg.hpp"
 
 class Kernel
 {
@@ -22,6 +23,7 @@ class Kernel
         bool        load(std::string &filepath);
         cl_int      build(cl_program program, std::string & entrypoint);
         cl_kernel   getId(void);
+        cl_int      setArguments(cl_context context, std::vector<KernelArg*> & args);
 
         char        *source;
         std::string entrypoint;

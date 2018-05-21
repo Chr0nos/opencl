@@ -67,3 +67,23 @@ cl_kernel Kernel::getId(void)
 {
     return (this->id);
 }
+
+cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
+{
+    int                                 index;
+    std::vector<KernelArg*>::iterator i;
+
+    index = 0;
+    for (i = args.begin(); i != args.end(); i++)
+    {
+        if (!(*i)->allocate(context))
+            return (CL_MEM_OBJECT_ALLOCATION_FAILURE);
+        if (clSetKernelArg(this->id, index++, (*i)->size, (*i)->hostptr) != CL_SUCCESS)
+        {
+            std::cout << "Kernel argument " << index << " failed" << std::endl;
+            return (CL_INVALID_ARG_VALUE);
+        }
+    }
+    std::cout << "Kernel: " << index << " argument(s) successfully set" << std::endl;
+    return (CL_SUCCESS);
+}

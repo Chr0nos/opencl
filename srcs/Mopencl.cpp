@@ -74,7 +74,8 @@ bool Mopencl::errored(cl_int const code)
 	return (true);
 }
 
-bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint)
+bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
+	std::vector<KernelArg*> & args)
 {
 	cl_int		ret;
 
@@ -96,6 +97,11 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint)
 		return (false);
 	if (this->errored(this->kernel->build(this->program, entrypoint)))
 		return (false);
+
+	// setup arguments here
+	if (!this->kernel->setArguments(this->context, args))
+		return (false);
+
 	if (this->errored(clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(),
 			1, NULL, &this->global_item_size, &this->local_item_size, 0, NULL, NULL)))
 		return (false);

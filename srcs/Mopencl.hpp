@@ -20,6 +20,7 @@
 # endif
 # include <string>
 # include "kernel.hpp"
+# include "KernelArg.hpp"
 
 typedef struct			s_error_pair {
 	const char			*str;
@@ -58,7 +59,8 @@ class	Mopencl
 							Mopencl(Mopencl const & src);
 							~Mopencl(void);
 		Mopencl&			operator=(Mopencl const & src);
-		bool				Init(std::string & kernel_filepath, std::string & entrypoint);
+		bool				Init(std::string & kernel_filepath,
+			std::string & entrypoint, std::vector<KernelArg*> & args);
 		void static			notify(const char *errinfo, const void *private_info,
 			size_t cb, void *user_data);
 
