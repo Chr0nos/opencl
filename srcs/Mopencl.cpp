@@ -23,7 +23,7 @@ Mopencl::Mopencl(void)
 	this->device_id = 0;
 	this->program = 0;
 	this->local_item_size = 1;
-	this->global_item_size = 12;
+	this->global_item_size = 1024;
 }
 
 Mopencl::Mopencl(Mopencl const & src)
