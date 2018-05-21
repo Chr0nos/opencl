@@ -129,4 +129,15 @@ void Mopencl::deleteArgs(std::vector<KernelArg*> & args)
 void Mopencl::run(void)
 {
 	std::cout << "kernel payload is running on the graphic card" << std::endl;
+	clFlush(this->command_queue);
+	clFinish(this->command_queue);
+}
+
+bool Mopencl::getBuff(cl_mem buff, size_t size, void *target)
+{
+	cl_int			ret;
+
+	ret = clEnqueueReadBuffer(this->command_queue, buff, CL_TRUE, 0, size,
+		target, 0, NULL, NULL);
+	return (ret == CL_SUCCESS);
 }

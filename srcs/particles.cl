@@ -18,17 +18,18 @@ struct				s_config
 	float3			color_start;
 };
 
-void		kernel	render(global struct s_particle *particles,
-	size_t total_kernels_count)
+void		kernel	render(__global struct s_particle *particles,
+	const size_t particles_count)
 {
 	const int					id = get_global_id(0);
-	const size_t				particles_count = 1024 * 768;
+	const size_t				total_kernels_count = get_global_size(0);
 	const size_t				slize_size = particles_count / total_kernels_count;
 	const size_t				offset = id * slize_size;
 	__global struct s_particle	*particle;
-   
-	printf("[%d] -> (%lu) [%lu] {%lu::%lu}\n", id, total_kernels_count, slize_size,
-		offset, offset + slize_size);
+
+	printf("[%d] -> (%lu) [%lu] {%lu::%lu} %lu\n",
+		id, total_kernels_count, slize_size,
+		offset, offset + slize_size, particles_count);
 
 	for (size_t p = 0; p < slize_size ; p++)
 	{
