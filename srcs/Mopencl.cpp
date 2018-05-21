@@ -103,8 +103,7 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 	if (this->errored(this->kernel->build(this->program, entrypoint)))
 		return (false);
 
-
-	// setup arguments here
+	// setup arguments here, before clEnqueueNDRangeKernel
 	if (this->kernel->setArguments(this->context, args) != CL_SUCCESS)
 		return (false);
 

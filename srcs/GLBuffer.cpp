@@ -42,7 +42,7 @@ GLuint GLBuffer::GetBufferId(void)
 
 bool GLBuffer::CreateBuffer(size_t const size, void * const data)
 {
-    this->_buffSize = size;
+    this->_buffSize = (GLsizeiptr)size;
     std::cout << "creating buffer..." << std::endl;
     glGenBuffers(1, &this->_bufferId);
     std::cout << "buffer id: " << this->_bufferId << std::endl;

@@ -11,7 +11,7 @@
 class KernelArg
 {
     public:
-          KernelArg(void *hostptr, size_t size, cl_int protection);
+          KernelArg(void *hostptr, size_t size, cl_mem_flags protection);
         ~KernelArg(void);
         cl_int allocate(cl_context context);
 

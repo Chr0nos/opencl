@@ -47,7 +47,7 @@ bool GlfwWindow::Init(void)
 
 bool GlfwWindow::InitGlew(void)
 {
-	int			err;
+	unsigned int			err;
 
 	if ((!(this->_flags & FLAG_GLEW_INIT_OK)) && ((err = glewInit()) != GLEW_OK))
 	{
@@ -66,7 +66,7 @@ bool GlfwWindow::Show(void)
 		std::cout << "error: missing glfw initialisation" << std::endl;
 		return (false);
 	}
-	this->_window = glfwCreateWindow(this->_w, this->_h, this->_title.c_str(),
+	this->_window = glfwCreateWindow((int)this->_w, (int)this->_h, this->_title.c_str(),
 			NULL, NULL);
 
 	if (this->_window)

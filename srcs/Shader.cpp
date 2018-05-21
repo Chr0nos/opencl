@@ -23,12 +23,12 @@ bool Shader::BuildFile(char const * filepath, GLuint const type)
 
     std::cout << "Shader build source from " << filepath << std::endl;
     ifs.seekg(0, ifs.end);
-    length = ifs.tellg();
+    length = (size_t)ifs.tellg();
     ifs.seekg(0, ifs.beg);
     shader_code = new char[length];
     if (!shader_code)
         return (false);
-    ifs.read(shader_code, length);
+    ifs.read(shader_code, (std::streamsize)length);
     ifs.close();
     ret = this->Build(shader_code, length, type);
     delete shader_code;

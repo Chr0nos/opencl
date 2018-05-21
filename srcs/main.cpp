@@ -22,7 +22,6 @@
 #define EXIT_BADARG		2
 #define EXIT_CLPROG		3
 #define PARTICLES_COUNT 1000000
-#define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
 
 # pragma pack(push, 1)
 
@@ -32,6 +31,8 @@ typedef struct			s_particle {
 }						t_particle;
 
 # pragma pack(pop)
+
+#define	PARTICLES_MEM (sizeof(t_particle) * PARTICLES_COUNT)
 
 int		run_window(Mopencl & cl)
 {
@@ -56,19 +57,20 @@ int		run_window(Mopencl & cl)
 
 int		main(int ac, char **av)
 {
-	std::string	filepath = std::string(av[1]);
-	std::string kernel_entrypoint = "render";
-	Mopencl		cl;
+	std::string					filepath = std::string(av[1]);
+	std::string					kernel_entrypoint = "render";
+	Mopencl						cl;
+	std::vector<KernelArg*>		args;
 
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	std::vector<KernelArg*>		args;
-
 	args.push_back(new KernelArg(nullptr, PARTICLES_MEM, CL_MEM_READ_WRITE));
+	args.push_back(new KernelArg(nullptr, sizeof(size_t), CL_MEM_READ_ONLY));
 
 	if (!(cl.Init(filepath, kernel_entrypoint, args)))
 	{
+		delete args[1];
 		delete args[0];
 		return (EXIT_FAILURE);
 	}

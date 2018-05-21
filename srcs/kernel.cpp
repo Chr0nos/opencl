@@ -31,7 +31,7 @@ bool Kernel::load(std::string & filepath)
 	std::cout << "kernel read start" << std::endl;
 	this->size = 0;
 	ifs.seekg(0, ifs.end);
-	length = ifs.tellg();
+	length = (size_t)ifs.tellg();
 	std::cout << "kernel file: " << filepath << std::endl;
 	std::cout << "kernel size: " << length << std::endl;
 	ifs.seekg(0, ifs.beg);
@@ -40,7 +40,7 @@ bool Kernel::load(std::string & filepath)
 	this->source = new char[length];
 	if (!this->source)
 		return (false);
-	ifs.read(this->source, length);
+	ifs.read(this->source, (std::streamsize)length);
 	ifs.close();
 	std::cout << "kernel read ok" << std::endl;
 	this->size = length;
@@ -70,24 +70,25 @@ cl_kernel Kernel::getId(void)
 
 cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
 {
-    int                                 index;
+    cl_uint                           index;
     std::vector<KernelArg*>::iterator i;
 
     index = 0;
     for (i = args.begin(); i != args.end(); i++)
     {
         std::cout << "Kernel loading argument: " << index << std::endl;
-        if (!(*i)->allocate(context))
+        if ((*i)->allocate(context) != CL_SUCCESS)
         {
             std::cout << "Kernel error: failed to allocate " << (*i)->size <<
                 " bytes of memory on device" << std::endl;
             return (CL_MEM_OBJECT_ALLOCATION_FAILURE);
         }
-        if (clSetKernelArg(this->id, index++, (*i)->size, (*i)->hostptr) != CL_SUCCESS)
+        if (clSetKernelArg(this->id, index, (*i)->size, (*i)->hostptr) != CL_SUCCESS)
         {
             std::cout << "Kernel argument " << index << " failed" << std::endl;
             return (CL_INVALID_ARG_VALUE);
         }
+        index++;
     }
     std::cout << "Kernel: " << index << " argument(s) successfully set" << std::endl;
     return (CL_SUCCESS);

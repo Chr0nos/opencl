@@ -1,6 +1,6 @@
 #include "KernelArg.hpp"
 
-KernelArg::KernelArg(void *hostptr, size_t size, cl_int protection)
+KernelArg::KernelArg(void *hostptr, size_t size, cl_mem_flags protection)
 {
     this->hostptr = hostptr;
     this->size = size;
@@ -20,11 +20,9 @@ KernelArg::~KernelArg(void)
 
 cl_int KernelArg::allocate(cl_context context)
 {
-    int     ret;
+    cl_int     ret;
 
     this->id = clCreateBuffer(context, this->protection,
         this->size, this->hostptr, &ret);
-    if (ret != CL_SUCCESS)
-        return (CL_MEM_OBJECT_ALLOCATION_FAILURE);
-    return (CL_SUCCESS);
+    return (ret);
 }
