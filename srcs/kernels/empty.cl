@@ -1,4 +1,4 @@
-void kernel render(global float3 *particles, size_t size)
+void kernel render(global float3 *particles, unsigned int size)
 {
-	printf("%lu\n", size);
+	printf("%u\n", size);
 }

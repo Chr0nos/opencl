@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:44:40 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/08 14:37:10 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/21 20:36:44 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Mopencl::Mopencl(void)
 	this->device_id = 0;
 	this->program = 0;
 	this->local_item_size = 1;
-	this->global_item_size = 1024;
+	this->global_item_size = 12;
 }
 
 Mopencl::Mopencl(Mopencl const & src)
@@ -34,6 +34,8 @@ Mopencl::Mopencl(Mopencl const & src)
 Mopencl::~Mopencl(void)
 {
 	std::cout << "Mopencl destructor called" << std::endl;
+	if (this->command_queue)
+		clFinish(this->command_queue);
 	delete this->kernel;
 	std::cout << "Mopencl deleting command queue" << std::endl;
 	if (this->command_queue)
@@ -102,11 +104,12 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 		&this->kernel->size, &ret);
 	if (this->errored(ret))
 		return (false);
-	if (this->errored(clBuildProgram(this->program, 1, &this->device_id, NULL, NULL, NULL)))
+	if (this->errored(clBuildProgram(this->program, 1, &this->device_id,
+			"-cl-fast-relaxed-math -Werror", NULL, NULL)))
 	{
 		this->showBuildInfo();
 		return (false);
-	}	
+	}
 	if (this->errored(this->kernel->build(this->program, entrypoint)))
 		return (false);
 
@@ -163,5 +166,6 @@ bool Mopencl::getBuff(cl_mem buff, size_t size, void *target)
 
 	ret = clEnqueueReadBuffer(this->command_queue, buff, CL_TRUE, 0, size,
 		target, 0, NULL, NULL);
+	clFinish(this->command_queue);
 	return (ret == CL_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/26 00:47:03 by snicolet          #+#    #+#             */
-/*   Updated: 2018/05/19 18:22:39 by snicolet         ###   ########.fr       */
+/*   Updated: 2018/05/21 20:36:25 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,13 +83,25 @@ int		run_window(Mopencl & cl)
 //   \- kernel -> KernelArg
 //   \- program
 
+static void		test_retrive(Mopencl & cl, cl_mem buffer)
+{
+	t_particle		*particles;
+
+	particles = new t_particle[PARTICLES_COUNT];
+	cl.getBuff(buffer, PARTICLES_COUNT, particles);
+	for (size_t i = 0; i < 20; i++)
+	{
+	}
+	delete[] particles;
+}
+
 int		main(int ac, char **av)
 {
 	std::string					filepath = std::string(av[1]);
 	std::string					kernel_entrypoint = "render";
 	Mopencl						cl;
 	std::vector<KernelArg*>		args;
-	size_t						particles_count = PARTICLES_COUNT;
+	cl_uint						particles_count = PARTICLES_COUNT;
 
 	if (ac < 2)
 		return (EXIT_BADARG);
@@ -102,15 +114,12 @@ int		main(int ac, char **av)
 		Mopencl::deleteArgs(args);
 		return (EXIT_FAILURE);
 	}
-	// t_particle		*test = new t_particle[PARTICLES_COUNT];
-	// cl.getBuff(args[0]->id, PARTICLES_MEM, test);
-	// // display_particle(test, 20);
-	// delete[] test;
-	
+	(void)test_retrive;
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
 	// return (run_window(cl));
+	std::cout << "--------- CLEANING PART -------------------" << std::endl;
 	Mopencl::deleteArgs(args);
 	return (EXIT_SUCCESS);
 }
