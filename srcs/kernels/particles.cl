@@ -26,9 +26,9 @@ void		kernel	render(__global struct s_particle *particles,
 	if (slice_size == 0)
 		return ;
 	offset = id * slice_size;
-	printf("[%3d] -> (%lu) [%8lu] {%8lu::%8lu} %lu\n",
+	printf("[%3d] -> (%lu) [%8lu] {%8lu::%8lu} %lu %u\n",
 		id, total_kernels_count, slice_size,
-		offset, offset + slice_size, particles_count);
+		offset, offset + slice_size, particles_count, sizeof(struct s_particle));
 
 	for (size_t p = 0; p < slice_size; p++)
 	{
