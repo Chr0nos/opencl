@@ -33,12 +33,15 @@ Mopencl::Mopencl(Mopencl const & src)
 
 Mopencl::~Mopencl(void)
 {
-	std::cout << "destructor called" << std::endl;
+	std::cout << "Mopencl destructor called" << std::endl;
 	delete this->kernel;
-	std::cout << "deleting command queue" << std::endl;
-	clReleaseCommandQueue(this->command_queue);
-	std::cout << "deleting context" << std::endl;
-	clReleaseContext(this->context);
+	std::cout << "Mopencl deleting command queue" << std::endl;
+	if (this->command_queue)
+		clReleaseCommandQueue(this->command_queue);
+	std::cout << "Mopencl deleting context" << std::endl;
+	if (this->context)
+		clReleaseContext(this->context);
+	std::cout << "Mopencl done" << std::endl;
 }
 
 Mopencl& Mopencl::operator=(Mopencl const & src)
@@ -92,7 +95,8 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 		return (false);
 	}
 	this->command_queue = clCreateCommandQueue(this->context, this->device_id, 0, &ret);
-	this->kernel->load(kernel_filepath);
+	if (!(this->kernel->load(kernel_filepath)))
+		return (false);
 	this->program = clCreateProgramWithSource(this->context, 1,
 		static_cast<const char **>(static_cast<void*>(&this->kernel->source)),
 		&this->kernel->size, &ret);

@@ -1,4 +1,5 @@
 #include "kernel.hpp"
+#include <sys/stat.h>
 
 Kernel::Kernel(void)
 {
@@ -11,10 +12,13 @@ Kernel::Kernel(void)
 
 Kernel::~Kernel(void)
 {
+    std::cout << "Kernel destructor called" << std::endl;
     if (this->source)
         delete this->source;
     std::cout << "Kernel destroyed (" << this->path << ")" << std::endl;
-    clReleaseKernel(this->id);
+    if (this->id)
+        clReleaseKernel(this->id);
+    std::cout << "Kernel done" << std::endl;
 }
 
 size_t Kernel::length(void)
@@ -26,17 +30,23 @@ bool Kernel::load(std::string & filepath)
 {
 	std::ifstream		ifs(filepath, std::ifstream::binary);
 	size_t				length;
+    struct stat         st;
 
     this->path = filepath.c_str();
+    if (this->source)
+        delete this->source;
+    this->source = nullptr;
+    this->size = 0;
+    if (stat(filepath.c_str(), &st) < 0)
+        return (false);
+    if (st.st_size <= 0)
+        return (false);
 	std::cout << "kernel read start" << std::endl;
-	this->size = 0;
 	ifs.seekg(0, ifs.end);
 	length = (size_t)ifs.tellg();
 	std::cout << "kernel file: " << filepath << std::endl;
 	std::cout << "kernel size: " << length << std::endl;
 	ifs.seekg(0, ifs.beg);
-    if (this->source)
-        delete this->source;
 	this->source = new char[length];
 	if (!this->source)
 		return (false);
