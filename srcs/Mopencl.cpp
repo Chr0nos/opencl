@@ -86,6 +86,11 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 		return (false);
 	this->context = clCreateContext(NULL, 1, &this->device_id,
 		&Mopencl::notify, NULL, &ret);
+	if (ret != CL_SUCCESS)
+	{
+		std::cout << "Error: failed to create context" << std::endl;
+		return (false);
+	}
 	this->command_queue = clCreateCommandQueue(this->context, this->device_id, 0, &ret);
 	this->kernel->load(kernel_filepath);
 	this->program = clCreateProgramWithSource(this->context, 1,
@@ -98,8 +103,9 @@ bool Mopencl::Init(std::string & kernel_filepath, std::string & entrypoint,
 	if (this->errored(this->kernel->build(this->program, entrypoint)))
 		return (false);
 
+
 	// setup arguments here
-	if (!this->kernel->setArguments(this->context, args))
+	if (this->kernel->setArguments(this->context, args) != CL_SUCCESS)
 		return (false);
 
 	if (this->errored(clEnqueueNDRangeKernel(this->command_queue, this->kernel->getId(),

@@ -24,10 +24,14 @@
 #define PARTICLES_COUNT 1000000
 #define	PARTICLES_MEM (sizeof(int) * 4) * PARTICLES_COUNT
 
+# pragma pack(push, 1)
+
 typedef struct			s_particle {
 	cl_float3			position;
 	cl_float3			velocity;
 }						t_particle;
+
+# pragma pack(pop)
 
 int		run_window(Mopencl & cl)
 {
@@ -64,7 +68,10 @@ int		main(int ac, char **av)
 	args.push_back(new KernelArg(nullptr, PARTICLES_MEM, CL_MEM_READ_WRITE));
 
 	if (!(cl.Init(filepath, kernel_entrypoint, args)))
+	{
+		delete args[0];
 		return (EXIT_FAILURE);
+	}
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
@@ -75,4 +82,5 @@ int		main(int ac, char **av)
 	// cl.RunProgram().setArg(0, test);
 	// return (run_window(cl));
 	return (EXIT_SUCCESS);
+
 }
