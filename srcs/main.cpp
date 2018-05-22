@@ -59,18 +59,6 @@ int		run_window(Mopencl & cl)
 //   \- kernel -> KernelArg
 //   \- program
 
-static void		test_retrive(Mopencl & cl, cl_mem buffer)
-{
-	t_particle		*particles;
-
-	particles = new t_particle[PARTICLES_COUNT];
-	cl.getBuff(buffer, PARTICLES_COUNT, particles);
-	for (size_t i = 0; i < 20; i++)
-	{
-	}
-	delete[] particles;
-}
-
 int		main(int ac, char **av)
 {
 	std::string					filepath = std::string(av[1]);
@@ -91,7 +79,6 @@ int		main(int ac, char **av)
 		Mopencl::deleteArgs(args);
 		return (EXIT_FAILURE);
 	}
-	(void)test_retrive;
 	std::cout << "--------- END OF OPENCL INIT PART ---------" << std::endl;
 
 	std::cout << "--------- START OF OPENGL PART ------------" << std::endl;
