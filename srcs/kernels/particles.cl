@@ -21,7 +21,7 @@ void		kernel	render(__global struct s_particle *particles,
 	const size_t				total_kernels_count = get_global_size(0);
 	const size_t				slice_size = particles_count / total_kernels_count;
 	size_t						offset;
-	__global struct s_particle	*particle;
+	__global struct s_particle 	*particle;
 
 	if (slice_size == 0)
 		return ;

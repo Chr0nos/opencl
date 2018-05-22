@@ -96,7 +96,8 @@ cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
         // after allocate the (*i)->size will be sizeof(cl_mem)
         // in case of no allocation required the size will be the one passed at the
         // KernelArg creation
-        if (clSetKernelArg(this->id, index, (*i)->size, (*i)->ptr) != CL_SUCCESS)
+        if (clSetKernelArg(this->id, index, (*i)->size,
+            ((*i)->memobj == true ? &(*i)->id : (*i)->ptr)) != CL_SUCCESS)
         {
             std::cout << "Kernel argument " << index << " failed" << std::endl;
             return (CL_INVALID_ARG_VALUE);
