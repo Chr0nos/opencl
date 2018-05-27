@@ -87,17 +87,7 @@ cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
     {
         std::cout << "Kernel loading argument: " << index <<
             " (" << (*i)->size << ")" << std::endl;
-        if (((*i)->memobj) && ((*i)->allocate(context) != CL_SUCCESS))
-        {
-            std::cout << "Kernel error: failed to allocate " << (*i)->size <<
-                " bytes of memory on device" << std::endl;
-            return (CL_MEM_OBJECT_ALLOCATION_FAILURE);
-        }
-        // after allocate the (*i)->size will be sizeof(cl_mem)
-        // in case of no allocation required the size will be the one passed at the
-        // KernelArg creation
-        if (clSetKernelArg(this->id, index, (*i)->size,
-            ((*i)->memobj == true ? &(*i)->id : (*i)->ptr)) != CL_SUCCESS)
+        if (!(*i)->send(context, this->id, index))
         {
             std::cout << "Kernel argument " << index << " failed" << std::endl;
             return (CL_INVALID_ARG_VALUE);

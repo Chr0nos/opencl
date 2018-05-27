@@ -20,7 +20,7 @@ BUILDDIR=./build
 SRCDIR=./srcs
 
 SRCS=main.cpp Mopencl.cpp GlfwWindow.cpp GLBuffer.cpp Vbo.cpp Shader.cpp \
-	kernel.cpp KernelArg.cpp
+	kernel.cpp KernelArg.cpp KernelArgMem.cpp
 
 OBJS=$(SRCS:%.cpp=$(BUILDDIR)/%.o)
 

@@ -17,6 +17,7 @@
 #include "Vbo.hpp"
 #include "Shader.hpp"
 #include "kernel.hpp"
+#include "KernelArgMem.hpp"
 #include <string>
 #define EXIT_SUCCESS	0
 #define EXIT_FAILURE	1
@@ -70,9 +71,9 @@ int		main(int ac, char **av)
 	if (ac < 2)
 		return (EXIT_BADARG);
 	std::cout << "-------- START OF OPENCL INIT PART ---------" << std::endl;
-	args.push_back(new KernelArg(nullptr, PARTICLES_MEM, CL_MEM_READ_WRITE, true));
+	args.push_back(new KernelArgMem(nullptr, PARTICLES_MEM, CL_MEM_READ_WRITE));
 	args.push_back(new KernelArg(
-		&particles_count, sizeof(particles_count), CL_MEM_READ_ONLY, false));
+		&particles_count, sizeof(particles_count), CL_MEM_READ_ONLY));
 
 	if (!(cl.Init(filepath, kernel_entrypoint, args)))
 	{

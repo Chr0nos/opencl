@@ -11,15 +11,14 @@
 class KernelArg
 {
     public:
-          KernelArg(void *ptr, size_t size, cl_mem_flags protection, bool memobj);
+          KernelArg(void *ptr, size_t size, cl_mem_flags protection);
         ~KernelArg(void);
-        cl_int allocate(cl_context context);
+        bool send(const cl_context context, const cl_kernel kernel, const cl_uint index);
 
         void            *ptr;
         cl_mem_flags    protection;
         size_t          size;
         cl_mem          id;
-        bool            memobj;
 };
 
 #endif
