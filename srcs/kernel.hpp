@@ -12,6 +12,7 @@
 # include <iostream>
 # include <vector>
 # include "KernelArg.hpp"
+# include "KernelArgMem.hpp"
 
 class Kernel
 {

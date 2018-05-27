@@ -81,13 +81,17 @@ cl_kernel Kernel::getId(void)
 cl_int Kernel::setArguments(cl_context context, std::vector<KernelArg*> & args)
 {
     cl_uint                           index;
+    KernelArgMem                       *argmem;
 
     index = 0;
     for (auto i = args.begin(); i != args.end(); i++)
     {
         std::cout << "Kernel loading argument: " << index <<
             " (" << (*i)->size << ")" << std::endl;
-        if (!(*i)->send(context, this->id, index))
+        argmem = reinterpret_cast<KernelArgMem*>(*i);
+        if ((argmem) && (!argmem->send(context, this->id, index)))
+            return (CL_INVALID_ARG_VALUE);
+        else if (!(*i)->send(context, this->id, index))
         {
             std::cout << "Kernel argument " << index << " failed" << std::endl;
             return (CL_INVALID_ARG_VALUE);

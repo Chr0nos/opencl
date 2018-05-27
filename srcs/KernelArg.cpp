@@ -17,6 +17,7 @@ KernelArg::~KernelArg(void)
 // this functions has to be overloaded for cl_mem objets
 bool KernelArg::send(const cl_context context, const cl_kernel kernel, const cl_uint index)
 {
+    std::cout << "Regular kernel arg " << index << std::endl;
     (void)context;
     return (clSetKernelArg(kernel, index, this->size, this->ptr) == CL_SUCCESS);
 }
